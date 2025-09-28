@@ -1,5 +1,6 @@
 public class StartButton : Widget
 {
+	public Theme theme = new();
 	public Button btn = new();
 
 	public StartButton(WidgetEnv ENV) : base(ENV)
@@ -9,9 +10,9 @@ public class StartButton : Widget
 
 		btn.Height = 19;
 		btn.Width = 19;
-		btn.Foreground = Theme.TEXT_COLOR;
-		btn.Background = Theme.BUTTON_BACKGROUND;
-		btn.FontFamily = Theme.FONT_FAMILY;
+		btn.Foreground = theme.TEXT_COLOR;
+		btn.Background = theme.BUTTON_BACKGROUND;
+		btn.FontFamily = theme.FONT_FAMILY;
 		btn.Content = icon;
 		btn.Click += Clicked;
 		this.Content = btn;
