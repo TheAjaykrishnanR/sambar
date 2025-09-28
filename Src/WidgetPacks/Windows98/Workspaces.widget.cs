@@ -2,11 +2,13 @@ public class Workspaces : Widget
 {
 	List<Workspace> workspaces = new();
 	public List<Button> buttons = new();
+	public Theme theme = new();
+
 	public Workspaces(WidgetEnv ENV) : base(ENV)
 	{
 		workspaces = Sambar.api.workspaces;
 
-		//this.CornerRadius = Theme.WIDGET_CORNER_RADIUS;
+		//this.CornerRadius = theme.WIDGET_CORNER_RADIUS;
 		StackPanelWithGaps panel = new(2, workspaces.Count);
 		panel.Orientation = Orientation.Horizontal;
 		panel.VerticalAlignment = VerticalAlignment.Center;
@@ -15,11 +17,11 @@ public class Workspaces : Widget
 		{
 			Button btn = new();
 			btn.Content = new TextBlock() { Text = $"{i}" };
-			btn.FontFamily = Theme.FONT_FAMILY;
-			btn.Width = Theme.BUTTON_WIDTH;
-			btn.Height = Theme.BUTTON_HEIGHT;
-			btn.Foreground = Theme.TEXT_COLOR;
-			btn.Background = Theme.BUTTON_BACKGROUND;
+			btn.FontFamily = theme.FONT_FAMILY;
+			btn.Width = theme.BUTTON_WIDTH;
+			btn.Height = theme.BUTTON_HEIGHT;
+			btn.Foreground = theme.TEXT_COLOR;
+			btn.Background = theme.BUTTON_BACKGROUND;
 			btn.Click += WorkspaceButtonClicked;
 			buttons.Add(btn);
 			panel.Add(btn);
@@ -28,7 +30,7 @@ public class Workspaces : Widget
 		if (buttons.Count > 0)
 		{
 			var selectedButton = buttons[Sambar.api.currentWorkspace.index];
-			selectedButton.Background = Theme.BUTTON_PRESSED_BACKGROUND;
+			selectedButton.Background = theme.BUTTON_PRESSED_BACKGROUND;
 			selectedButton.Foreground = new SolidColorBrush(Colors.White);
 		}
 		Sambar.api.GLAZE_WORKSPACE_CHANGED += (workspace) =>
@@ -44,11 +46,11 @@ public class Workspaces : Widget
 		{
 			foreach (var button in buttons)
 			{
-				button.Foreground = Theme.TEXT_COLOR;
-				button.Background = Theme.BUTTON_BACKGROUND;
+				button.Foreground = theme.TEXT_COLOR;
+				button.Background = theme.BUTTON_BACKGROUND;
 			}
 			buttons[index].Foreground = new SolidColorBrush(Colors.White);
-			buttons[index].Background = Theme.BUTTON_PRESSED_BACKGROUND;
+			buttons[index].Background = theme.BUTTON_PRESSED_BACKGROUND;
 		});
 	}
 

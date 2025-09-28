@@ -4,22 +4,26 @@ public class Tray : Widget
 {
 	sambar.Menu? menu = null;
 
+	public Theme theme = new();
 	public RoundedButton btn = new();
+	public string iconFile = "arrow_down.svg";
 
 	public Tray(WidgetEnv ENV) : base(ENV) { }
 	public override void Init()
 	{
-		if (!ENV.IS_IMPORTED) btn.ImageSrc = Path.Join(ENV.ASSETS_FOLDER, "arrow_down.svg");
-		else btn.ImageSrc = Path.Join(ENV.IMPORTS_ASSETS_FOLDER, "arrow_down.svg");
-		btn.IconHeight = Theme.ICON_HEIGHT;
-		btn.IconWidth = Theme.ICON_WIDTH;
-		btn.Height = Theme.BUTTON_HEIGHT;
-		btn.Width = Theme.BUTTON_WIDTH;
-		btn.Margin = Theme.BUTTON_MARGIN;
-		btn.Foreground = Theme.TEXT_COLOR;
-		btn.Background = Theme.BUTTON_BACKGROUND;
-		btn.HoverColor = Theme.BUTTON_HOVER_COLOR;
-		btn.CornerRadius = Theme.BUTTON_CORNER_RADIUS;
+		if (File.Exists(Path.Join(ENV.ASSETS_FOLDER, iconFile)))
+			btn.ImageSrc = Path.Join(ENV.ASSETS_FOLDER, iconFile);
+		else
+			btn.ImageSrc = Path.Join(ENV.IMPORTS_ASSETS_FOLDER, iconFile);
+		btn.IconHeight = theme.ICON_HEIGHT;
+		btn.IconWidth = theme.ICON_WIDTH;
+		btn.Height = theme.BUTTON_HEIGHT;
+		btn.Width = theme.BUTTON_WIDTH;
+		btn.Margin = theme.BUTTON_MARGIN;
+		btn.Foreground = theme.TEXT_COLOR;
+		btn.Background = theme.BUTTON_BACKGROUND;
+		btn.HoverColor = theme.BUTTON_HOVER_COLOR;
+		btn.CornerRadius = theme.BUTTON_CORNER_RADIUS;
 		btn.HoverEffect = false;
 		btn.MouseDown += (s, e) =>
 		{
@@ -28,8 +32,8 @@ public class Tray : Widget
 		};
 
 		this.Content = btn;
-		this.Background = Theme.WIDGET_BACKGROUND;
-		this.CornerRadius = Theme.WIDGET_CORNER_RADIUS;
+		this.Background = theme.WIDGET_BACKGROUND;
+		this.CornerRadius = theme.WIDGET_CORNER_RADIUS;
 
 		//Task.Run(async() =>
 		//{
@@ -56,14 +60,14 @@ public class Tray : Widget
 			foreach (var trayIcon in trayIcons)
 			{
 				RoundedButton iconBtn = new();
-				iconBtn.Height = Theme.BUTTON_HEIGHT;
-				iconBtn.Width = Theme.BUTTON_WIDTH;
-				iconBtn.Margin = Theme.BUTTON_MARGIN;
-				iconBtn.Foreground = Theme.TEXT_COLOR;
-				iconBtn.Background = Theme.BUTTON_BACKGROUND;
-				iconBtn.HoverColor = Theme.BUTTON_HOVER_COLOR;
-				iconBtn.CornerRadius = Theme.BUTTON_CORNER_RADIUS;
-				iconBtn.FontFamily = Theme.FONT_FAMILY;
+				iconBtn.Height = theme.BUTTON_HEIGHT;
+				iconBtn.Width = theme.BUTTON_WIDTH;
+				iconBtn.Margin = theme.BUTTON_MARGIN;
+				iconBtn.Foreground = theme.TEXT_COLOR;
+				iconBtn.Background = theme.BUTTON_BACKGROUND;
+				iconBtn.HoverColor = theme.BUTTON_HOVER_COLOR;
+				iconBtn.CornerRadius = theme.BUTTON_CORNER_RADIUS;
+				iconBtn.FontFamily = theme.FONT_FAMILY;
 				iconBtn.Icon = trayIcon.icon;
 				iconBtn.HoverEffect = false;
 				iconBtn.Margin = new(10, 10, 0, 0);

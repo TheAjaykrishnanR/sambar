@@ -9,10 +9,6 @@ public class ActionCenter : Widget
 		StackPanel panel = new();
 		panel.Orientation = Orientation.Horizontal;
 
-		//ENV.ASSETS_FOLDER = ENV.ASSETS_FOLDER.Replace("Islands", "Base");
-		ENV.IS_IMPORTED = true;
-		Sambar.api.Print($"imported: {ENV.IS_IMPORTED}, {ENV.IMPORTS_ASSETS_FOLDER}");
-
 		NetworkManager wifi = new(ENV);
 		Tray tray = new(ENV);
 		Wallpapers wall = new(ENV);

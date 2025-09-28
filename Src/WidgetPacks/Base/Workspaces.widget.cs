@@ -2,24 +2,35 @@ public class Workspaces : Widget
 {
 	List<Workspace> workspaces = new();
 	public List<RoundedButton> buttons = new();
+	public Theme theme = new();
 
 	/*
 	 * Made public so that they can be edited in a mod file (Workspaces.mod.cs)
 	 * */
 
-	public int BUTTON_HEIGHT = Theme.BUTTON_HEIGHT;
-	public int BUTTON_WIDTH = Theme.BUTTON_WIDTH;
+	//public int BUTTON_HEIGHT = theme.BUTTON_HEIGHT;
+	//public int BUTTON_WIDTH = theme.BUTTON_WIDTH;
 
-	public Brush BUTTON_BACKGROUND = Theme.BUTTON_BACKGROUND;
-	public Brush BUTTON_PRESSED_BACKGROUND = Theme.BUTTON_PRESSED_BACKGROUND;
+	//FONT_FAMILY = theme.FONT_FAMILY;
+	//BUTTON_CORNER_RADIUS = theme.BUTTON_CORNER_RADIUS;
+	//BUTTON_WIDTH = theme.BUTTON_WIDTH;
+	//BUTTON_HEIGHT = theme.BUTTON_HEIGHT;
+	//BUTTON_BORDER_THICKNESS = theme.BUTTON_BORDER_THICKNESS;
+	//BUTTON_BORDER_COLOR = theme.BUTTON_BORDER_COLOR;
+	//TEXT_COLOR = theme.TEXT_COLOR;
+	//BUTTON_HOVER_COLOR = theme.BUTTON_HOVER_COLOR;
+	//BUTTON_BACKGROUND = theme.BUTTON_BACKGROUND;
+
+	//public Brush BUTTON_BACKGROUND = theme.BUTTON_BACKGROUND;
+	//public Brush BUTTON_PRESSED_BACKGROUND = theme.BUTTON_PRESSED_BACKGROUND;
 
 	public Workspaces(WidgetEnv ENV) : base(ENV) { }
 	public override void Init()
 	{
 		workspaces = Sambar.api.workspaces;
 
-		//this.CornerRadius = Theme.WIDGET_CORNER_RADIUS;
-		StackPanelWithGaps panel = new(Theme.WIDGET_GAP, workspaces.Count);
+		//this.CornerRadius = theme.WIDGET_CORNER_RADIUS;
+		StackPanelWithGaps panel = new(theme.WIDGET_GAP, workspaces.Count);
 		panel.Orientation = Orientation.Horizontal;
 		panel.VerticalAlignment = VerticalAlignment.Center;
 		panel.ClipToBounds = true;
@@ -29,15 +40,15 @@ public class Workspaces : Widget
 		{
 			RoundedButton btn = new();
 			btn.Text = $"{i}";
-			btn.FontFamily = Theme.FONT_FAMILY;
-			btn.CornerRadius = Theme.BUTTON_CORNER_RADIUS;
-			btn.Width = Theme.BUTTON_WIDTH;
-			btn.Height = Theme.BUTTON_HEIGHT;
-			btn.BorderThickness = Theme.BUTTON_BORDER_THICKNESS;
-			btn.BorderBrush = Theme.BUTTON_BORDER_COLOR;
-			btn.Foreground = Theme.TEXT_COLOR;
-			btn.HoverColor = Theme.BUTTON_HOVER_COLOR;
-			btn.Background = Theme.BUTTON_BACKGROUND;
+			btn.FontFamily = theme.FONT_FAMILY;
+			btn.CornerRadius = theme.BUTTON_CORNER_RADIUS;
+			btn.Width = theme.BUTTON_WIDTH;
+			btn.Height = theme.BUTTON_HEIGHT;
+			btn.BorderThickness = theme.BUTTON_BORDER_THICKNESS;
+			btn.BorderBrush = theme.BUTTON_BORDER_COLOR;
+			btn.Foreground = theme.TEXT_COLOR;
+			btn.HoverColor = theme.BUTTON_HOVER_COLOR;
+			btn.Background = theme.BUTTON_BACKGROUND;
 			btn.HoverEffect = true;
 			btn.MouseDown += WorkspaceButtonClicked;
 			buttons.Add(btn);
@@ -45,7 +56,7 @@ public class Workspaces : Widget
 		}
 		Sambar.api.Print($"workspaces: {workspaces.Count}, buttons: {buttons.Count}, index: {Sambar.api.currentWorkspace.index}");
 		if (buttons.Count > 0)
-			buttons[Sambar.api.currentWorkspace.index].Background = BUTTON_PRESSED_BACKGROUND;
+			buttons[Sambar.api.currentWorkspace.index].Background = theme.BUTTON_PRESSED_BACKGROUND;
 		Sambar.api.GLAZE_WORKSPACE_CHANGED += (workspace) =>
 		{
 			RedrawButtons(workspace.index);
@@ -59,9 +70,9 @@ public class Workspaces : Widget
 		{
 			foreach (var button in buttons)
 			{
-				button.Background = BUTTON_BACKGROUND;
+				button.Background = theme.BUTTON_BACKGROUND;
 			}
-			buttons[index].Background = BUTTON_PRESSED_BACKGROUND;
+			buttons[index].Background = theme.BUTTON_PRESSED_BACKGROUND;
 			buttons[index].HoverEffect = false;
 		});
 	}

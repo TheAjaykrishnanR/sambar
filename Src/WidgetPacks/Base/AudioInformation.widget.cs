@@ -1,10 +1,12 @@
 public class AudioInformation : Widget
 {
+	public Theme theme = new();
+
 	public AudioInformation(WidgetEnv ENV) : base(ENV)
 	{
 		TextBlock textBlock = new();
 		textBlock.Foreground = new SolidColorBrush(System.Windows.Media.Colors.Black);
-		textBlock.FontFamily = Theme.FONT_FAMILY;
+		textBlock.FontFamily = theme.FONT_FAMILY;
 		textBlock.TextWrapping = TextWrapping.Wrap;
 		textBlock.TextAlignment = TextAlignment.Right;
 		//textBlock.FontWeight = FontWeights.Bold;

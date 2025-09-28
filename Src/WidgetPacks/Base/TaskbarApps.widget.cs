@@ -3,21 +3,22 @@ public class TaskbarApps : Widget
 	StackPanel panel = new();
 	RunningApp focusedApp;
 	List<RoundedButton> btns = new();
+	public Theme theme = new();
 
 	/*
 	 * Made public so that they can be edited in a mod file (TaskbarApps.mod.cs)
 	 * */
 
-	public int BUTTON_HEIGHT = Theme.BUTTON_HEIGHT;
-	public int BUTTON_WIDTH = Theme.BUTTON_WIDTH;
+	//public int BUTTON_HEIGHT = Theme.BUTTON_HEIGHT;
+	//public int BUTTON_WIDTH = Theme.BUTTON_WIDTH;
 
-	public Brush BUTTON_BACKGROUND = Theme.BUTTON_BACKGROUND;
-	public Brush BUTTON_BORDER_COLOR = Theme.BUTTON_BORDER_COLOR;
-	public Thickness BUTTON_BORDER_THICKNESS = Theme.BUTTON_BORDER_THICKNESS;
+	//public Brush BUTTON_BACKGROUND = Theme.BUTTON_BACKGROUND;
+	//public Brush BUTTON_BORDER_COLOR = Theme.BUTTON_BORDER_COLOR;
+	//public Thickness BUTTON_BORDER_THICKNESS = Theme.BUTTON_BORDER_THICKNESS;
 
-	public Brush BUTTON_PRESSED_BACKGROUND = new SolidColorBrush(Colors.Transparent);
-	public Brush BUTTON_PRESSED_BORDER_COLOR = Utils.BrushFromHex("#22F803");
-	public Thickness BUTTON_PRESSED_BORDER_THICKNESS = new(0, 5, 0, 0);
+	//public Brush BUTTON_PRESSED_BACKGROUND = new SolidColorBrush(Colors.Transparent);
+	//public Brush BUTTON_PRESSED_BORDER_COLOR = Utils.BrushFromHex("#22F803");
+	//public Thickness BUTTON_PRESSED_BORDER_THICKNESS = new(0, 5, 0, 0);
 
 	public TaskbarApps(WidgetEnv ENV) : base(ENV)
 	{
@@ -42,10 +43,10 @@ public class TaskbarApps : Widget
 				RoundedButton btn = new();
 				btn.Id = app.hWnd.ToString();
 				btn.Icon = app.icon;
-				btn.Height = BUTTON_HEIGHT;
-				btn.Width = BUTTON_WIDTH;
-				btn.IconHeight = BUTTON_HEIGHT - 2;
-				btn.IconWidth = BUTTON_WIDTH - 2;
+				btn.Height = theme.BUTTON_HEIGHT;
+				btn.Width = theme.BUTTON_WIDTH;
+				btn.IconHeight = theme.BUTTON_HEIGHT - 2;
+				btn.IconWidth = theme.BUTTON_WIDTH - 2;
 				btn.Margin = new(0, 0, 5, 0);
 				btn.HoverEffect = false;
 				List<MenuButton> menuItems = new()
@@ -90,15 +91,15 @@ public class TaskbarApps : Widget
 			{
 				if (btn.Id == app.hWnd.ToString())
 				{
-					btn.Background = BUTTON_PRESSED_BACKGROUND;
-					btn.BorderBrush = BUTTON_PRESSED_BORDER_COLOR;
-					btn.BorderThickness = BUTTON_PRESSED_BORDER_THICKNESS;
+					btn.Background = theme.BUTTON_PRESSED_BACKGROUND;
+					btn.BorderBrush = theme.BUTTON_PRESSED_BORDER_COLOR;
+					btn.BorderThickness = theme.BUTTON_PRESSED_BORDER_THICKNESS;
 				}
 				else
 				{
-					btn.Background = BUTTON_BACKGROUND;
-					btn.BorderBrush = BUTTON_BORDER_COLOR;
-					btn.BorderThickness = BUTTON_BORDER_THICKNESS;
+					btn.Background = theme.BUTTON_BACKGROUND;
+					btn.BorderBrush = theme.BUTTON_BORDER_COLOR;
+					btn.BorderThickness = theme.BUTTON_BORDER_THICKNESS;
 				}
 			}
 		});

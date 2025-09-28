@@ -134,20 +134,20 @@ internal class WidgetLoader
 			.ForEach(
 				file =>
 				{
+					Logger.Log($"Compiling {file.Name}");
 					string widgetName = file.Name.Replace(".widget.cs", "");
 
 					// check if the widget calls for including any reference widgets
-					List<(string, string)> packWidgetPairs = new();
+					List<(string, string)>? packWidgetPairs = new();
 					imports?.usings.TryGetValue(widgetName, out packWidgetPairs);
 					string codePrefix = "";
-					foreach (var pair in packWidgetPairs)
+					packWidgetPairs?.ForEach(pair =>
 					{
 						codePrefix += File.ReadAllText(Path.Join(Paths.widgetPacksFolder, pair.Item1, $"{pair.Item2}.widget.cs")) + "\n";
-					}
+					});
 					string fileContent = File.ReadAllText(file.FullName);
 					string code = codePrefix + "\n" + fileContent;
 
-					Logger.Log($"Compiling {file.Name}");
 					Logger.Log(code);
 					string dllName = file.Name.Replace(".cs", "");
 					Utils.CompileStringToDll(code, $"{dllName}", [(Path.Join(Paths.dllFolder, ".theme.dll"), null)], wrapInTryCatch: catchWidgetExceptions);

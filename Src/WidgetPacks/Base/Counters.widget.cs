@@ -1,15 +1,14 @@
 ﻿public class Counters : Widget
 {
+	public Theme theme = new();
 	public TextBlock textBlock = new();
-	long cpuUsage = 0;
-	float downSpeed = 0f, upSpeed = 0f;
-	float memUsage = 0;
+
 	public Counters(WidgetEnv ENV) : base(ENV)
 	{
-		textBlock.Foreground = Theme.TEXT_COLOR;
-		textBlock.FontFamily = Theme.FONT_FAMILY;
+		textBlock.Foreground = theme.TEXT_COLOR;
+		textBlock.FontFamily = theme.FONT_FAMILY;
 		textBlock.VerticalAlignment = VerticalAlignment.Center;
-		textBlock.Margin = new(5);
+		textBlock.Margin = new(0);
 
 		Sambar.api.CPU_PERFORMANCE_NOTIFIED += (_usage) => { cpuUsage = _usage[0]; };
 		Sambar.api.NETWORK_SPEED_NOTIFIED += (_speeds) => { downSpeed = _speeds[0]; upSpeed = _speeds[1]; };
@@ -18,6 +17,10 @@
 
 		this.Content = textBlock;
 	}
+
+	long cpuUsage = 0;
+	float downSpeed = 0f, upSpeed = 0f;
+	float memUsage = 0;
 
 	public void UpdateText()
 	{
