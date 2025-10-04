@@ -35,16 +35,6 @@ public class Tray : Widget
 		this.Background = theme.WIDGET_BACKGROUND;
 		this.CornerRadius = theme.WIDGET_CORNER_RADIUS;
 
-		//Task.Run(async() =>
-		//{
-		//    Sambar.api.Print("STARTING TRAY LOOP");
-		//    while(true)
-		//    {
-		//        UpdateTrayPanel();
-		//        Sambar.api.Print("TRAY UPDATED");
-		//        await Task.Delay(1000);
-		//    }
-		//});
 		Sambar.api.TASKBAR_CHANGED += () => UpdateTrayPanel();
 	}
 

@@ -4,26 +4,6 @@ public class Workspaces : Widget
 	public List<RoundedButton> buttons = new();
 	public Theme theme = new();
 
-	/*
-	 * Made public so that they can be edited in a mod file (Workspaces.mod.cs)
-	 * */
-
-	//public int BUTTON_HEIGHT = theme.BUTTON_HEIGHT;
-	//public int BUTTON_WIDTH = theme.BUTTON_WIDTH;
-
-	//FONT_FAMILY = theme.FONT_FAMILY;
-	//BUTTON_CORNER_RADIUS = theme.BUTTON_CORNER_RADIUS;
-	//BUTTON_WIDTH = theme.BUTTON_WIDTH;
-	//BUTTON_HEIGHT = theme.BUTTON_HEIGHT;
-	//BUTTON_BORDER_THICKNESS = theme.BUTTON_BORDER_THICKNESS;
-	//BUTTON_BORDER_COLOR = theme.BUTTON_BORDER_COLOR;
-	//TEXT_COLOR = theme.TEXT_COLOR;
-	//BUTTON_HOVER_COLOR = theme.BUTTON_HOVER_COLOR;
-	//BUTTON_BACKGROUND = theme.BUTTON_BACKGROUND;
-
-	//public Brush BUTTON_BACKGROUND = theme.BUTTON_BACKGROUND;
-	//public Brush BUTTON_PRESSED_BACKGROUND = theme.BUTTON_PRESSED_BACKGROUND;
-
 	public Workspaces(WidgetEnv ENV) : base(ENV) { }
 	public override void Init()
 	{
@@ -77,7 +57,7 @@ public class Workspaces : Widget
 		});
 	}
 
-	// for updating Glaze when buttons pressed
+	// for updating Glaze when buttons pressed 
 	bool buttonRedrawing = false;
 	public void WorkspaceButtonClicked(object? sender, RoutedEventArgs e)
 	{
