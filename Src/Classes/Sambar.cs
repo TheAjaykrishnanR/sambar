@@ -81,7 +81,7 @@ public partial class Sambar : Window
 		};
 	}
 
-	//public static double scale;
+	public static double scale;
 	bool barTransparent = false;
 	public static int screenWidth;
 	public static int screenHeight;
@@ -92,11 +92,13 @@ public partial class Sambar : Window
 		screenWidth = User32.GetSystemMetrics(0);
 		screenHeight = User32.GetSystemMetrics(1);
 
+		Console.WriteLine($"screenWidth: {screenWidth}, screenHeight: {screenHeight}");
+
 		// get the scalefactor of the primary monitor
-		//scale = Utils.GetDisplayScaling();
-		//Logger.Log($"Scale factor: {scale}");
-		//screenWidth = (int)(screenWidth / scale);
-		//screenHeight = (int)(screenHeight / scale);
+		scale = Utils.GetDisplayScaling();
+		Logger.Log($"Scale factor: {scale}");
+		screenWidth = (int)(screenWidth / scale);
+		screenHeight = (int)(screenHeight / scale);
 
 		if (config.width == 0) { config.width = screenWidth - (config.marginXLeft + config.marginXRight); }
 
@@ -200,7 +202,7 @@ public partial class Sambar : Window
 				abd.rc.Right = abd.rc.Left + config.width;
 				break;
 			case ABE_TOP:
-				abd.rc.Bottom = abd.rc.Top + config.height;
+				abd.rc.Bottom = (int)Math.Floor((abd.rc.Top + config.height + 2 * config.marginYTop) * Sambar.scale);
 				break;
 			case ABE_RIGHT:
 				abd.rc.Left = abd.rc.Right - config.width;

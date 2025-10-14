@@ -38,7 +38,7 @@ public partial class Api
 		x = x < Sambar.api.config.marginXLeft ? Sambar.api.config.marginXLeft : x;
 		int y = Sambar.api.config.marginYTop + Sambar.api.config.height + 5;
 
-		//x = (int)(x / Sambar.scale);
+		x = (int)(x / Sambar.scale);
 		//y = (int)(y / Sambar.scale);
 
 		activeMenu = new Menu(x, y, width, height);
@@ -62,7 +62,7 @@ public partial class Api
 	public Menu CreateContextMenu(List<MenuButton> items)
 	{
 		User32.GetCursorPos(out POINT pt);
-		activeMenu = new ContextMenu((int)(pt.X), (int)(pt.Y), 100, items.Count * 30);
+		activeMenu = new ContextMenu((int)(pt.X / Sambar.scale), (int)(pt.Y / Sambar.scale), 100, items.Count * 30);
 		StackPanel panel = new();
 		panel.Orientation = Orientation.Vertical;
 		foreach (var item in items)
