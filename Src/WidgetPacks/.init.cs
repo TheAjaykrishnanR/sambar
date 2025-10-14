@@ -1,3 +1,3 @@
 ﻿// return the widget pack's name
 
-return "Plain1";
+return "Windows98";

@@ -133,6 +133,12 @@ public class RunningApp
 	public void FocusWindow()
 	{
 		Logger.Log($"App requested focus");
+		WINDOWPLACEMENT wndPlcmnt = new();
+		User32.GetWindowPlacement(hWnd, ref wndPlcmnt);
+		if ((SHOWWINDOW)wndPlcmnt.showCmd == SHOWWINDOW.SW_SHOWMINIMIZED)
+		{
+			User32.ShowWindow(hWnd, SHOWWINDOW.SW_RESTORE);
+		}
 		User32.SetForegroundWindow(hWnd);
 	}
 	public void Kill()
