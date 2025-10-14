@@ -94,6 +94,8 @@ public enum WINDOWSTYLE : uint
 	//#endif /* WIN32WINNT >= 0x0500 */
 }
 
+// https://forum.xojo.com/t/dwmgetwindowattribute-windows-declare/86291
+// windows enums must start with 1
 public enum DWMWINDOWATTRIBUTE : uint
 {
 	DWMWA_NCRENDERING_ENABLED,
@@ -104,7 +106,7 @@ public enum DWMWINDOWATTRIBUTE : uint
 	DWMWA_NONCLIENT_RTL_LAYOUT,
 	DWMWA_FORCE_ICONIC_REPRESENTATION,
 	DWMWA_FLIP3D_POLICY,
-	DWMWA_EXTENDED_FRAME_BOUNDS,
+	DWMWA_EXTENDED_FRAME_BOUNDS = 9,
 	DWMWA_HAS_ICONIC_BITMAP,
 	DWMWA_DISALLOW_PEEK,
 	DWMWA_EXCLUDED_FROM_PEEK,
