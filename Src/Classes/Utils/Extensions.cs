@@ -9,6 +9,8 @@ using System.Drawing;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Interop;
 
 namespace sambar;
 
@@ -61,5 +63,19 @@ public static class Extensions
 			ctxMenu.Items.Add(menuItem);
 		}
 		self.ContextMenu = ctxMenu;
+	}
+
+	/// <summary>
+	/// Hooks the WndProc
+	/// </summary>
+	public static void Hook(this Window wnd, WndProc proc)
+	{
+		HwndSource hWndSrc = HwndSource.FromHwnd(new WindowInteropHelper(wnd).EnsureHandle());
+		HwndSourceHook hook = new(proc);
+		hWndSrc.AddHook(hook);
+		wnd.Closing += (s, e) =>
+		{
+			hWndSrc.RemoveHook(hook);
+		};
 	}
 }

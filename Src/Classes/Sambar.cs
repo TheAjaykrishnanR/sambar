@@ -61,14 +61,17 @@ public partial class Sambar : Window
 		{
 			hWnd = new WindowInteropHelper(this).Handle;
 			WindowInit(); // needs hWnd
+			this.Hook(WndProc);
 		};
 
 		Loaded += (s, e) =>
 		{
 			if (firstShow)
 			{
-				RegisterAsAppBar(); // do this before AddWidgets atleast because for some reason
+				RegisterAsAppbar(); // do this before AddWidgets atleast because for some reason
 									// calling this after does not guarantee ABM_SETPOS, maybe because of ToggleTaskbar ?
+									// ToggleTaskbar has a call to SHAppbarMessage() to hide the real taskbar
+									// maybe thats whats messing with it ?
 
 				api = new(this);
 				api.config = config; //setting a copy of the config to the API 
@@ -146,22 +149,29 @@ public partial class Sambar : Window
 	// cleanup and exit
 	public void Exit()
 	{
-		UnregisterAsAppBar();
+		UnregisterAsAppbar();
 		Sambar.api?.Cleanup();
 		_Main.app.Shutdown();
 	}
 
 	/// <summary>
+	/// Allows us to claim desktop real estate
 	/// Does not work in SourceInitialized, needs at lest Loaded
 	/// </summary>
 	APPBARDATA abd = new();
-	public void RegisterAsAppBar()
+	public void RegisterAsAppbar()
 	{
 		abd.cbSize = (uint)Marshal.SizeOf<APPBARDATA>();
 		abd.hWnd = this.hWnd;
 		abd.uCallbackMessage = User32.RegisterWindowMessage("SambarMessage");
 
 		uint res = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.New, ref abd);
+
+		AppbarSetPos();
+	}
+
+	public void AppbarSetPos()
+	{
 
 		const int ABE_LEFT = 0;
 		const int ABE_TOP = 1;
@@ -201,13 +211,37 @@ public partial class Sambar : Window
 		}
 
 		uint res3 = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.SetPos, ref abd);
-		Logger.Log($"REGISTERED AS APPBAR, abm.new: {res}, abd.qpos: {res2}, abm.setpos: {res3}");
+		Logger.Log($"REGISTERED AS APPBAR, abd.qpos: {res2}, abm.setpos: {res3}");
 		Logger.Log($"win32: {Marshal.GetLastWin32Error()}");
 	}
 
-	public void UnregisterAsAppBar()
+	public void UnregisterAsAppbar()
 	{
 		uint res = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.Remove, ref abd);
 		Logger.Log($"UNREGISTERED AS APPBAR: {res}");
+	}
+
+	private nint WndProc(nint hWnd, int msg, nint wparam, nint lparam, ref bool handled)
+	{
+		switch (wparam)
+		{
+			case (int)APPBARNOTIFY.ABN_POSCHANGED:
+				AppbarSetPos();
+				handled = true;
+				break;
+			case (int)APPBARNOTIFY.ABN_FULLSCREENAPP:
+				if (lparam > 0) // fullscreen app is opening
+				{
+					this.Topmost = false;
+					User32.SetWindowPos(this.hWnd, (nint)SWPZORDER.HWND_BOTTOM, 0, 0, 0, 0, SETWINDOWPOS.SWP_NOMOVE | SETWINDOWPOS.SWP_NOSIZE | SETWINDOWPOS.SWP_NOACTIVATE);
+				}
+				else // revert back to topmost once fullscreen app closes
+				{
+					User32.SetWindowPos(this.hWnd, (nint)SWPZORDER.HWND_TOPMOST, 0, 0, 0, 0, SETWINDOWPOS.SWP_NOMOVE | SETWINDOWPOS.SWP_NOSIZE | SETWINDOWPOS.SWP_NOACTIVATE);
+					this.Topmost = true;
+				}
+				break;
+		}
+		return 0;
 	}
 }

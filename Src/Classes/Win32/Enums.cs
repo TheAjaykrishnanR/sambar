@@ -158,6 +158,14 @@ public enum APPBARMESSAGE
 	SetState = 0x0a
 }
 
+public enum APPBARNOTIFY : int
+{
+	ABN_STATECHANGE = 0,
+	ABN_POSCHANGED,
+	ABN_FULLSCREENAPP,
+	ABN_WINDOWARRANGE
+}
+
 public enum APPBARSTATE
 {
 	AutoHide = 0x01,
