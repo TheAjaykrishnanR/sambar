@@ -223,11 +223,17 @@ public partial class Sambar : Window
 
 	private nint WndProc(nint hWnd, int msg, nint wparam, nint lparam, ref bool handled)
 	{
+		switch (msg)
+		{
+			case (int)WINDOWMESSAGE.WM_ACTIVATE:
+				Shell32.SHAppBarMessage((int)APPBARMESSAGE.Activate, ref abd);
+				break;
+		}
+
 		switch (wparam)
 		{
 			case (int)APPBARNOTIFY.ABN_POSCHANGED:
 				AppbarSetPos();
-				handled = true;
 				break;
 			case (int)APPBARNOTIFY.ABN_FULLSCREENAPP:
 				if (lparam > 0) // fullscreen app is opening
