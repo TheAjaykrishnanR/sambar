@@ -4,9 +4,11 @@
 	{
 		this.height = 20;
 		this.width = 0;
+		this.dockEdge = "bottom";
 		this.marginXLeft = 0;
 		this.marginXRight = 0;
 		this.marginYTop = 0;
+		this.marginYBottom = 0;
 		this.paddingXLeft = 0;
 		this.paddingXRight = 0;
 		this.paddingYTop = 0;

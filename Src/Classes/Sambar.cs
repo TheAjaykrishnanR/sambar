@@ -83,6 +83,7 @@ public partial class Sambar : Window
 
 	public static double scale;
 	bool barTransparent = false;
+	// these are scaled, to get original multiply with scale
 	public static int screenWidth;
 	public static int screenHeight;
 	public void WindowInit()
@@ -115,7 +116,13 @@ public partial class Sambar : Window
 		this.Width = config.width;
 		this.Height = config.height;
 		this.Left = config.marginXLeft;
-		this.Top = config.marginYTop;
+		this.Top = config.dockEdge switch
+		{
+			"top" => config.marginYTop,
+			"bottom" => screenHeight - (config.height + config.marginYBottom),
+			_ => config.marginYTop
+		};
+
 
 		this.BorderBrush = Utils.BrushFromHex(config.borderColor);
 		this.BorderThickness = config.borderThickness;
@@ -180,15 +187,22 @@ public partial class Sambar : Window
 		const int ABE_RIGHT = 2;
 		const int ABE_BOTTOM = 3;
 
-		abd.uEdge = ABE_TOP;
+		abd.uEdge = config.dockEdge switch
+		{
+			"left" => ABE_LEFT,
+			"top" => ABE_TOP,
+			"right" => ABE_RIGHT,
+			"bottom" => ABE_BOTTOM,
+			_ => ABE_TOP,
+		};
 
 		switch (abd.uEdge)
 		{
 			case ABE_LEFT or ABE_RIGHT:
-				abd.rc = new() { Top = 0, Bottom = screenHeight };
+				abd.rc = new() { Top = 0, Bottom = Convert.ToInt32(screenHeight * Sambar.scale) };
 				break;
 			case ABE_TOP or ABE_BOTTOM:
-				abd.rc = new() { Left = 0, Right = screenWidth };
+				abd.rc = new() { Left = 0, Right = Convert.ToInt32(screenWidth * Sambar.scale) };
 				break;
 		}
 
@@ -199,22 +213,30 @@ public partial class Sambar : Window
 		switch (abd.uEdge)
 		{
 			case ABE_LEFT:
-				abd.rc.Right = abd.rc.Left + config.width;
+				//abd.rc.Right = abd.rc.Left + config.width;
 				break;
 			case ABE_TOP:
-				abd.rc.Bottom = (int)Math.Floor((abd.rc.Top + config.height + 2 * config.marginYTop) * Sambar.scale);
+				abd.rc.Bottom = Convert.ToInt32((config.height + 2 * config.marginYTop) * Sambar.scale);
 				break;
 			case ABE_RIGHT:
-				abd.rc.Left = abd.rc.Right - config.width;
+				//abd.rc.Left = abd.rc.Right - config.width;
 				break;
 			case ABE_BOTTOM:
-				abd.rc.Top = abd.rc.Bottom - config.height;
+				abd.rc.Top = Convert.ToInt32((screenHeight - config.height - 2 * config.marginYBottom) * Sambar.scale);
+				abd.rc.Bottom = Convert.ToInt32(screenHeight * Sambar.scale);
 				break;
 		}
 
-		uint res3 = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.SetPos, ref abd);
+		uint res3 = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.SetPos, ref abd); // rect must be in absolute pixels, i.e. scale has to be multiplied to both
+																				  // screen sizes and config sizes
 		Logger.Log($"REGISTERED AS APPBAR, abd.qpos: {res2}, abm.setpos: {res3}");
+		RectPrinter(abd.rc);
 		Logger.Log($"win32: {Marshal.GetLastWin32Error()}");
+	}
+
+	void RectPrinter(RECT rect)
+	{
+		Logger.Log($"Left: {rect.Left}, Top: {rect.Top}, Right: {rect.Right}, Bottom: {rect.Bottom}");
 	}
 
 	public void UnregisterAsAppbar()

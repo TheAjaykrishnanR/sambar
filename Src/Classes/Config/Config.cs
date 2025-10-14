@@ -12,9 +12,11 @@ public class Config
 {
 	public int height = 40;
 	public int width = 0;
+	public string dockEdge = "top";
 	public int marginXLeft = 10;
 	public int marginXRight = 10;
 	public int marginYTop = 10;
+	public int marginYBottom = 10;
 	public int paddingXLeft = 0;
 	public int paddingXRight = 0;
 	public int paddingYTop = 0;
