@@ -22,16 +22,16 @@ namespace sambar;
 [StructLayout(LayoutKind.Sequential)]
 public struct APPBARDATA
 {
-    public uint cbSize;
-    public nint hWnd;
-    public uint uCallbackMessage;
-    public uint uEdge;
-    public Rectangle rc;
-    public uint lParam;
+	public uint cbSize;
+	public nint hWnd;
+	public uint uCallbackMessage;
+	public uint uEdge;
+	public RECT rc;
+	public uint lParam;
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct POINT 
+public struct POINT
 {
 	public int X;
 	public int Y;
@@ -66,7 +66,8 @@ public struct WINDOWPLACEMENT
 /// </summary>
 
 [StructLayout(LayoutKind.Sequential)]
-public struct _NOTIFYICONIDENTIFIER {
+public struct _NOTIFYICONIDENTIFIER
+{
 	public uint cbSize;
 	public nint hWnd;
 	public uint UID;
@@ -224,17 +225,17 @@ public struct SYSTEM_PROCESS_ID_INFORMATION
 [StructLayout(LayoutKind.Sequential)]
 public struct SYSTEM_BASIC_INFORMATION
 {
-   public uint Reserved;
-   public uint TimerResolution;
-   public uint PageSize;
-   public uint NumberOfPhysicalPages;
-   public uint LowestPhysicalPageNumber;
-   public uint HighestPhysicalPageNumber;
-   public uint AllocationGranularity;
-   public UIntPtr MinimumUserModeAddress;
-   public UIntPtr MaximumUserModeAddress;
-   public UIntPtr ActiveProcessorsAffinityMask;
-   public byte NumberOfProcessors;
+	public uint Reserved;
+	public uint TimerResolution;
+	public uint PageSize;
+	public uint NumberOfPhysicalPages;
+	public uint LowestPhysicalPageNumber;
+	public uint HighestPhysicalPageNumber;
+	public uint AllocationGranularity;
+	public UIntPtr MinimumUserModeAddress;
+	public UIntPtr MaximumUserModeAddress;
+	public UIntPtr ActiveProcessorsAffinityMask;
+	public byte NumberOfProcessors;
 }
 
 /// <summary>
@@ -253,10 +254,11 @@ public struct SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct _NL_BANDWIDTH_INFORMATION {
-  public ulong Bandwidth;
-  public ulong Instability;
-  public byte BandwidthPeaked;
+public struct _NL_BANDWIDTH_INFORMATION
+{
+	public ulong Bandwidth;
+	public ulong Instability;
+	public byte BandwidthPeaked;
 }
 
 /// <summary>
@@ -264,9 +266,10 @@ public struct _NL_BANDWIDTH_INFORMATION {
 /// </summary>
 
 [StructLayout(LayoutKind.Sequential)]
-public struct _MIB_IP_NETWORK_CONNECTION_BANDWIDTH_ESTIMATES {
-  public _NL_BANDWIDTH_INFORMATION InboundBandwidthInformation;
-  public _NL_BANDWIDTH_INFORMATION OutboundBandwidthInformation;
+public struct _MIB_IP_NETWORK_CONNECTION_BANDWIDTH_ESTIMATES
+{
+	public _NL_BANDWIDTH_INFORMATION InboundBandwidthInformation;
+	public _NL_BANDWIDTH_INFORMATION OutboundBandwidthInformation;
 }
 
 /// <summary>
@@ -274,14 +277,15 @@ public struct _MIB_IP_NETWORK_CONNECTION_BANDWIDTH_ESTIMATES {
 /// https://ntdoc.m417z.com/system_memory_usage_information
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct _SYSTEM_MEMORY_USAGE_INFORMATION { 
-    public ulong TotalPhysicalBytes;
-    public ulong AvailableBytes;
-    public long ResidentAvailableBytes;
-    public ulong CommittedBytes;
-    public long SharedCommittedBytes;
-    public long CommitLimitBytes;
-    public long PeakCommitmentBytes; 
+public struct _SYSTEM_MEMORY_USAGE_INFORMATION
+{
+	public ulong TotalPhysicalBytes;
+	public ulong AvailableBytes;
+	public long ResidentAvailableBytes;
+	public ulong CommittedBytes;
+	public long SharedCommittedBytes;
+	public long CommitLimitBytes;
+	public long PeakCommitmentBytes;
 }
 
 

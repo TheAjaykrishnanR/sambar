@@ -24,6 +24,7 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
 
 namespace sambar;
 
@@ -62,11 +63,13 @@ public partial class Sambar : Window
 			WindowInit(); // needs hWnd
 		};
 
-		// since ShowActivated = false
 		Loaded += (s, e) =>
 		{
 			if (firstShow)
 			{
+				RegisterAsAppBar(); // do this before AddWidgets atleast because for some reason
+									// calling this after does not guarantee ABM_SETPOS, maybe because of ToggleTaskbar ?
+
 				api = new(this);
 				api.config = config; //setting a copy of the config to the API 
 				AddWidgets();
@@ -75,20 +78,22 @@ public partial class Sambar : Window
 		};
 	}
 
-	public static double scale;
+	//public static double scale;
 	bool barTransparent = false;
 	public static int screenWidth;
 	public static int screenHeight;
 	public void WindowInit()
 	{
+		Shcore.SetProcessDpiAwareness(PROCESS_DPI_AWARENESS.PROCESS_PER_MONITOR_DPI_AWARE);
+
 		screenWidth = User32.GetSystemMetrics(0);
 		screenHeight = User32.GetSystemMetrics(1);
 
 		// get the scalefactor of the primary monitor
-		scale = Utils.GetDisplayScaling();
-		Logger.Log($"Scale factor: {scale}");
-		screenWidth = (int)(screenWidth / scale);
-		screenHeight = (int)(screenHeight / scale);
+		//scale = Utils.GetDisplayScaling();
+		//Logger.Log($"Scale factor: {scale}");
+		//screenWidth = (int)(screenWidth / scale);
+		//screenHeight = (int)(screenHeight / scale);
 
 		if (config.width == 0) { config.width = screenWidth - (config.marginXLeft + config.marginXRight); }
 
@@ -102,7 +107,6 @@ public partial class Sambar : Window
 
 		Utils.HideWindowInAltTab(hWnd);
 
-		//Win32.SetWindowPos(hWnd, IntPtr.Zero, config.marginXLeft, config.marginYTop, config.width, config.height, 0x0400);
 		this.Width = config.width;
 		this.Height = config.height;
 		this.Left = config.marginXLeft;
@@ -142,7 +146,68 @@ public partial class Sambar : Window
 	// cleanup and exit
 	public void Exit()
 	{
+		UnregisterAsAppBar();
 		Sambar.api?.Cleanup();
 		_Main.app.Shutdown();
+	}
+
+	/// <summary>
+	/// Does not work in SourceInitialized, needs at lest Loaded
+	/// </summary>
+	APPBARDATA abd = new();
+	public void RegisterAsAppBar()
+	{
+		abd.cbSize = (uint)Marshal.SizeOf<APPBARDATA>();
+		abd.hWnd = this.hWnd;
+		abd.uCallbackMessage = User32.RegisterWindowMessage("SambarMessage");
+
+		uint res = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.New, ref abd);
+
+		const int ABE_LEFT = 0;
+		const int ABE_TOP = 1;
+		const int ABE_RIGHT = 2;
+		const int ABE_BOTTOM = 3;
+
+		abd.uEdge = ABE_TOP;
+
+		switch (abd.uEdge)
+		{
+			case ABE_LEFT or ABE_RIGHT:
+				abd.rc = new() { Top = 0, Bottom = screenHeight };
+				break;
+			case ABE_TOP or ABE_BOTTOM:
+				abd.rc = new() { Left = 0, Right = screenWidth };
+				break;
+		}
+
+		uint res2 = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.QueryPos, ref abd);
+		Logger.Log($"APPBAR RECT, L: {abd.rc.Left}, T: {abd.rc.Top}, R: {abd.rc.Right}, B: {abd.rc.Bottom}");
+
+		// adjust
+		switch (abd.uEdge)
+		{
+			case ABE_LEFT:
+				abd.rc.Right = abd.rc.Left + config.width;
+				break;
+			case ABE_TOP:
+				abd.rc.Bottom = abd.rc.Top + config.height;
+				break;
+			case ABE_RIGHT:
+				abd.rc.Left = abd.rc.Right - config.width;
+				break;
+			case ABE_BOTTOM:
+				abd.rc.Top = abd.rc.Bottom - config.height;
+				break;
+		}
+
+		uint res3 = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.SetPos, ref abd);
+		Logger.Log($"REGISTERED AS APPBAR, abm.new: {res}, abd.qpos: {res2}, abm.setpos: {res3}");
+		Logger.Log($"win32: {Marshal.GetLastWin32Error()}");
+	}
+
+	public void UnregisterAsAppBar()
+	{
+		uint res = Shell32.SHAppBarMessage((uint)APPBARMESSAGE.Remove, ref abd);
+		Logger.Log($"UNREGISTERED AS APPBAR: {res}");
 	}
 }

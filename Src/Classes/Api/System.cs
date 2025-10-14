@@ -50,7 +50,7 @@ public partial class Api
 		(int imgWidth, int imgHeight) = Utils.GetImageDimensions(imageFile);
 		(img.Width, img.Height) = Utils.ScaleImage(imgWidth, imgHeight, (int)wnd.Width, (int)wnd.Height);
 
-		Logger.Log($"img.Width: {img.Width}, img.Height: {img.Height}, actual => W: {imgWidth}, H: {imgHeight}, [screen, x: {Sambar.screenWidth}, y: {Sambar.screenHeight}, scale: {Sambar.scale}]");
+		Logger.Log($"img.Width: {img.Width}, img.Height: {img.Height}, actual => W: {imgWidth}, H: {imgHeight}, [screen, x: {Sambar.screenWidth}, y: {Sambar.screenHeight}]");
 
 		// register a name for the ellipse so it can be targetted for animations
 		NameScope.SetNameScope(wnd, new NameScope());
