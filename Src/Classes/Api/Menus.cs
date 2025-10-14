@@ -34,11 +34,15 @@ public partial class Api
 	/// </summary>
 	public Menu CreateMenu(UserControl callingElement, int width = 100, int height = 100)
 	{
-		int x = (int)callingElement.PointToScreen(new Point(callingElement.Width / 2, callingElement.Height / 2)).X - (width / 2);
+		int x = (int)(callingElement.PointToScreen(new Point(callingElement.Width / 2, callingElement.Height / 2)).X / Sambar.scale) - (width / 2);
 		x = x < Sambar.api.config.marginXLeft ? Sambar.api.config.marginXLeft : x;
-		int y = Sambar.api.config.marginYTop + Sambar.api.config.height + 5;
+		int y = config.dockEdge switch
+		{
+			"top" => Sambar.api.config.marginYTop + Sambar.api.config.height + 5,
+			"bottom" => Sambar.screenHeight - Sambar.api.config.height - height - 5,
+		};
 
-		x = (int)(x / Sambar.scale);
+		//x = (int)(x / Sambar.scale);
 		//y = (int)(y / Sambar.scale);
 
 		activeMenu = new Menu(x, y, width, height);

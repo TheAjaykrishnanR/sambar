@@ -4,7 +4,7 @@
 	{
 		this.height = 20;
 		this.width = 0;
-		this.dockEdge = "bottom";
+		this.dockEdge = "top";
 		this.marginXLeft = 0;
 		this.marginXRight = 0;
 		this.marginYTop = 0;
