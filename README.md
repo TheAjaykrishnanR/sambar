@@ -33,6 +33,7 @@ positions and colors are <ins>fully customizable</ins>. [dive in?](https://githu
  9. Network Manager (open actions center)
  10. Hide the default windows taskbar
  11. Animated Wallpaper changer
+ 12. [AviyalWM](https://github.com/TheAjaykrishnanR/aviyal) workspaces
 
 ## Showcase
 
