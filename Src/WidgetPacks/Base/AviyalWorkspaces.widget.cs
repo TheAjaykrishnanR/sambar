@@ -78,15 +78,14 @@ public class AviyalWorkspaces : Widget
 		buttonRedrawing = true;
 		var btn = sender as RoundedButton;
 		string clickedBtnName = Convert.ToString(btn.Text);
-		//Workspace clickedWorkspace = workspaces.Where(wksp => wksp.name == clickedBtnName).First();
-		//int clickedBtnIndex = clickedWorkspace.index;
-		//RedrawButtons(clickedBtnIndex);
-		//Task.Run(async () =>
-		//{
-		//	await Sambar.api.ChangeWorkspace(clickedWorkspace);
-		//	await Task.Delay(3000);
-		//	buttonRedrawing = false;
-		//});
+		int clickedBtnIndex = Convert.ToInt32(clickedBtnName) - 1;
+		RedrawButtons(clickedBtnIndex);
+		Task.Run(async () =>
+		{
+			Sambar.api.AviyalSend($"set focusedWorkspaceIndex {clickedBtnIndex}");
+			await Task.Delay(1000);
+			buttonRedrawing = false;
+		});
 	}
 }
 
