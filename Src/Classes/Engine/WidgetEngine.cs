@@ -263,7 +263,9 @@ internal class WidgetLoader
 
 	static List<string> assembliesInScript = [
 		"System.Runtime",
-		"System.Collections"
+		"System.Collections",
+		typeof(System.Runtime.CompilerServices.DynamicAttribute).Assembly.FullName,
+		typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.FullName,
 	];
 
 	static string scriptUsingsPrefix =

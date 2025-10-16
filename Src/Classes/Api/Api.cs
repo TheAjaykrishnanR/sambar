@@ -32,6 +32,7 @@ public partial class Api
 		CustomWindowsInit();
 		ClockInit();
 		CountersInit();
+		AviyalInit();
 		initTasks.AddRange([
 			Task.Run(GlazeInit),
 			Task.Run(AudioInit)
