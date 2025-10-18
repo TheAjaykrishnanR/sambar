@@ -20,8 +20,7 @@ public class AviyalWorkspaces : Widget
 				});
 			}
 			RedrawButtons(focusedWorkspaceIndex);
-			Sambar.api.Print($"AviyalWorkspaces: {message}");
-			Sambar.api.Print($"{_workspaceCount}, {focusedWorkspaceIndex}");
+			Sambar.api.Print($"focused: {focusedWorkspaceIndex}");
 		};
 		Sambar.api.AVIYAL_CONNECTED += () => Sambar.api.AviyalSend("get state");
 		Sambar.api.AviyalSend("get state");
