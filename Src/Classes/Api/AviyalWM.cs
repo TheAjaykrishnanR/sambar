@@ -7,11 +7,13 @@ namespace sambar;
 
 public partial class Api
 {
-	AviyalClient? aviyalClient = null;
-	private void AviyalInit()
+	Client? aviyalClient = null;
+
+	private void AviyalInit() { }
+
+	public void StartAviyalClient(int port)
 	{
-		//if (Process.GetProcessesByName("aviyal").Length < 1) return;
-		aviyalClient = new();
+		aviyalClient = new(port);
 		aviyalClient.CONNECTED += () => AVIYAL_CONNECTED();
 		aviyalClient.MESSAGE_RECEIVED += (message) => AVIYAL_MESSAGE_RECEIVED(message);
 	}
@@ -24,19 +26,18 @@ public partial class Api
 
 	public void AviyalSend(string request) => aviyalClient?.Send(request);
 
-	private void AviyalCleanup()
-	{
-
-	}
+	private void AviyalCleanup() { }
 }
 
-class AviyalClient
+class Client
 {
 	Socket socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-	int aviyalPort = 6969;
+	int port;
 
-	public AviyalClient()
+	public Client(int port)
 	{
+		this.port = port;
+
 		Task.Run(() =>
 		{
 			while (true) TryConnect();
@@ -47,12 +48,12 @@ class AviyalClient
 	{
 		while (!socket.Connected)
 		{
-			Logger.Log("trying to connect to aviyal...");
+			Logger.Log("trying to connect to wm server...");
 			try
 			{
 				// cant reuse a disconnected socket
 				socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-				socket.Connect(new IPEndPoint(IPAddress.Loopback, aviyalPort));
+				socket.Connect(new IPEndPoint(IPAddress.Loopback, port));
 			}
 			catch (Exception ex)
 			{
@@ -60,7 +61,7 @@ class AviyalClient
 				Thread.Sleep(1000);
 			}
 		}
-		Logger.Log("connected to aviyal");
+		Logger.Log("connected to wm server");
 		Task.Run(() =>
 		{
 			Thread.Sleep(100);

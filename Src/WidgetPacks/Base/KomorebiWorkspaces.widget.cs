@@ -1,32 +1,45 @@
-public class AviyalWorkspaces : Widget
+public class KomorebiWorkspaces : Widget
 {
 	public List<RoundedButton> buttons = new();
 	public Theme theme = new();
 	int workspaceCount = 0;
 	int focusedWorkspaceIndex = 0;
-	int aviyalPort = 6969;
+	string komorebiPipe = "komorebi-pipe";
 
-	public AviyalWorkspaces(WidgetEnv ENV) : base(ENV) { }
+	public KomorebiWorkspaces(WidgetEnv ENV) : base(ENV) { }
 	public override void Init()
 	{
-		Sambar.api.StartAviyalClient(aviyalPort);
-		Sambar.api.AVIYAL_MESSAGE_RECEIVED += (message) =>
+		Sambar.api.StartKomorebiClient(komorebiPipe);
+
+		workspaceCount = GetWorkspaceCount();
+		Sambar.api.Print($"KOMOREBI WORKSPACE COUNT: {workspaceCount}");
+		this.Content = BuildUI();
+
+		Sambar.api.KOMOREBI_MESSAGE_RECEIVED += (message) =>
 		{
-			int _workspaceCount = JsonConvert.DeserializeObject<dynamic>(message)["workspaceCount"];
-			focusedWorkspaceIndex = JsonConvert.DeserializeObject<dynamic>(message)["focusedWorkspaceIndex"];
-			if (_workspaceCount > workspaceCount)
+			dynamic json = JsonConvert.DeserializeObject<dynamic>(message);
+			if (json["event"]["type"].Value == "FocusWorkspaceNumber")
 			{
-				workspaceCount = _workspaceCount;
-				this.Thread.Invoke(() =>
-				{
-					this.Content = BuildUI();
-				});
+				focusedWorkspaceIndex = Convert.ToInt32(json["event"]["content"].Value);
+				RedrawButtons(focusedWorkspaceIndex);
+				Sambar.api.Print($"KOMOREBI-WORKSPACE-CHANGE: {focusedWorkspaceIndex}");
 			}
-			RedrawButtons(focusedWorkspaceIndex);
-			Sambar.api.Print($"focused: {focusedWorkspaceIndex}");
 		};
-		Sambar.api.AVIYAL_CONNECTED += () => Sambar.api.AviyalSend("get state");
-		Sambar.api.AviyalSend("get state");
+	}
+
+	dynamic GetState()
+	{
+		string stateJson = Sambar.api.ExecuteShellCommand("komorebic state");
+		Sambar.api.Print($"KOMOREBI STATE: {stateJson}");
+		dynamic json = JsonConvert.DeserializeObject<dynamic>(stateJson);
+		return json;
+	}
+
+	int GetWorkspaceCount()
+	{
+		dynamic? json = GetState();
+		if (json == null) return 0;
+		return json?["monitors"]["elements"].First["workspaces"]["elements"].Count;
 	}
 
 	Panel BuildUI()
@@ -85,10 +98,9 @@ public class AviyalWorkspaces : Widget
 		RedrawButtons(clickedBtnIndex);
 		Task.Run(async () =>
 		{
-			Sambar.api.AviyalSend($"set focusedWorkspaceIndex {clickedBtnIndex}");
-			await Task.Delay(500);
+			Sambar.api.ExecuteShellCommand($"komorebic focus-workspace {clickedBtnIndex}");
+			await Task.Delay(1000);
 			buttonRedrawing = false;
 		});
 	}
 }
-

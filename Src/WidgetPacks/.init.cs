@@ -1,3 +1,3 @@
 ﻿// return the widget pack's name
 
-return "Plain2";
+return "Plain1-komorebi";
