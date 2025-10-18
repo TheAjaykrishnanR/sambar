@@ -23,6 +23,7 @@ public class AviyalWorkspaces : Widget
 			Sambar.api.Print($"AviyalWorkspaces: {message}");
 			Sambar.api.Print($"{_workspaceCount}, {focusedWorkspaceIndex}");
 		};
+		Sambar.api.AVIYAL_CONNECTED += () => Sambar.api.AviyalSend("get state");
 		Sambar.api.AviyalSend("get state");
 	}
 

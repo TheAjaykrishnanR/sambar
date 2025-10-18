@@ -12,22 +12,15 @@ public partial class Api
 	{
 		//if (Process.GetProcessesByName("aviyal").Length < 1) return;
 		aviyalClient = new();
-		Task.Run(() =>
-		{
-			while (true)
-			{
-				string recieved = aviyalClient.Receive();
-				if (recieved != null)
-				{
-					AVIYAL_MESSAGE_RECEIVED(recieved);
-					Logger.Log($"AVIYAL RESPONSE: {recieved}");
-				}
-			}
-		});
+		aviyalClient.CONNECTED += () => AVIYAL_CONNECTED();
+		aviyalClient.MESSAGE_RECEIVED += (message) => AVIYAL_MESSAGE_RECEIVED(message);
 	}
 
 	public delegate void AviyalReplyReceivedHandler(string message);
 	public event AviyalReplyReceivedHandler AVIYAL_MESSAGE_RECEIVED = (message) => { };
+
+	public delegate void AviyalConnectedHandler();
+	public event AviyalConnectedHandler AVIYAL_CONNECTED = () => { };
 
 	public void AviyalSend(string request) => aviyalClient?.Send(request);
 
@@ -46,28 +39,65 @@ class AviyalClient
 	{
 		Task.Run(() =>
 		{
-			while (!socket.Connected)
-			{
-				socket.Connect(new IPEndPoint(IPAddress.Loopback, aviyalPort));
-				Thread.Sleep(100);
-			}
-			Logger.Log("AVIYAL CLIENT CONNECTED");
+			while (true) TryConnect();
 		});
+	}
+
+	public void TryConnect()
+	{
+		while (!socket.Connected)
+		{
+			Logger.Log("trying to connect to aviyal...");
+			try
+			{
+				// cant reuse a disconnected socket
+				socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				socket.Connect(new IPEndPoint(IPAddress.Loopback, aviyalPort));
+			}
+			catch (Exception ex)
+			{
+				Logger.Log(ex.Message);
+				Thread.Sleep(1000);
+			}
+		}
+		Logger.Log("connected to aviyal");
+		Task.Run(() =>
+		{
+			Thread.Sleep(100);
+			CONNECTED();
+		});
+		Receive();
 	}
 
 	public void Send(string request)
 	{
+		if (!socket.Connected) return;
 		socket.Send(Encoding.UTF8.GetBytes(request));
 	}
 
-	public string Receive()
+	public delegate void MessageReceivedHandler(string message);
+	public event MessageReceivedHandler MESSAGE_RECEIVED = (message) => { };
+
+	public delegate void ConnectedEventHandler();
+	public event ConnectedEventHandler CONNECTED = () => { };
+
+	public void Receive()
 	{
-		if (!socket.Connected) return null;
-		byte[] buffer = new byte[1024];
-		Logger.Log("AVIYALCLIENT");
-		socket.Receive(buffer);
-		string response = Encoding.UTF8.GetString(buffer);
-		return response;
+		while (socket.Connected)
+		{
+			try
+			{
+				byte[] buffer = new byte[1024];
+				socket.Receive(buffer);
+				string message = Encoding.UTF8.GetString(buffer);
+				MESSAGE_RECEIVED(message);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log(ex.Message);
+				if (!socket.Connected) TryConnect();
+			}
+		}
 	}
 }
 
