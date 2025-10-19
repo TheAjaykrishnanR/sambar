@@ -1,22 +1,41 @@
 public class Workspaces : Widget
 {
-	List<Workspace> workspaces = new();
 	public List<RoundedButton> buttons = new();
 	public Theme theme = new();
+	int workspaceCount = 0;
+	int focusedWorkspaceIndex = 0;
 
 	public Workspaces(WidgetEnv ENV) : base(ENV) { }
 	public override void Init()
 	{
-		workspaces = Sambar.api.workspaces;
+		Sambar.api.StartGlazeClient("ws://localhost:6123");
 
-		//this.CornerRadius = theme.WIDGET_CORNER_RADIUS;
-		StackPanelWithGaps panel = new(theme.WIDGET_GAP, workspaces.Count);
+		Sambar.api.GLAZE_CONNECTED += (count) =>
+		{
+			buttons = new();
+			workspaceCount = count;
+			focusedWorkspaceIndex = Sambar.api.currentWorkspace.index;
+			this.Thread.Invoke(() =>
+			{
+				this.Content = BuildUI();
+			});
+		};
+		Sambar.api.GLAZE_WORKSPACE_CHANGED += (index) =>
+		{
+			focusedWorkspaceIndex = index;
+			RedrawButtons(index);
+		};
+	}
+
+	Panel BuildUI()
+	{
+		StackPanelWithGaps panel = new(theme.WIDGET_GAP, workspaceCount);
 		panel.Orientation = Orientation.Horizontal;
 		panel.VerticalAlignment = VerticalAlignment.Center;
 		panel.ClipToBounds = true;
 		panel.Height = Sambar.api.config.height;
 
-		for (int i = 1; i <= workspaces.Count; i++)
+		for (int i = 1; i <= workspaceCount; i++)
 		{
 			RoundedButton btn = new();
 			btn.Text = $"{i}";
@@ -34,14 +53,10 @@ public class Workspaces : Widget
 			buttons.Add(btn);
 			panel.Add(btn);
 		}
-		Sambar.api.Print($"workspaces: {workspaces.Count}, buttons: {buttons.Count}, index: {Sambar.api.currentWorkspace.index}");
+
 		if (buttons.Count > 0)
-			buttons[Sambar.api.currentWorkspace.index].Background = theme.BUTTON_PRESSED_BACKGROUND;
-		Sambar.api.GLAZE_WORKSPACE_CHANGED += (workspace) =>
-		{
-			RedrawButtons(workspace.index);
-		};
-		this.Content = panel;
+			buttons[focusedWorkspaceIndex].Background = theme.BUTTON_PRESSED_BACKGROUND;
+		return panel;
 	}
 
 	public void RedrawButtons(int index)
@@ -64,12 +79,11 @@ public class Workspaces : Widget
 		buttonRedrawing = true;
 		var btn = sender as RoundedButton;
 		string clickedBtnName = Convert.ToString(btn.Text);
-		Workspace clickedWorkspace = workspaces.Where(wksp => wksp.name == clickedBtnName).First();
-		int clickedBtnIndex = clickedWorkspace.index;
+		int clickedBtnIndex = Convert.ToInt32(clickedBtnName) - 1;
 		RedrawButtons(clickedBtnIndex);
 		Task.Run(async () =>
 		{
-			await Sambar.api.ChangeWorkspace(clickedWorkspace);
+			await Sambar.api.ChangeWorkspace(clickedBtnIndex);
 			await Task.Delay(3000);
 			buttonRedrawing = false;
 		});

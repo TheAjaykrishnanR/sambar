@@ -17,22 +17,34 @@ public partial class Api
 	// function
 	GlazeClient client;
 	private async void GlazeInit()
-	{
-		if (Process.GetProcessesByName("glazewm").Length < 1) return;
+	{ //if (Process.GetProcessesByName("glazewm").Length < 1) return; 
+	}
 
+	public async Task StartGlazeClient(string glazeUri)
+	{
 		// The order is important, when sending subscription notification to glaze, the event 
 		// handler must already be attached inorder to capture the response. We are processing 
 		// this response  in GlazeEventHandler but we need all the active glaze workspaces 
 		// to do so, therfore before sending the subscription run GetAllWorkspaces()
-		client = new();
+
+		client = new(glazeUri);
 		client.REPLY_RECIEVED += GlazeEventHandler;
-		await GetAllWorkspaces();
-		await SubscribeToGlazeWMEvents();
-		Logger.Log($"GlazeInit() => Workspaces: {workspaces.Count}");
+		client.CONNECTED += async () =>
+		{
+			await GetAllWorkspaces();
+			GLAZE_CONNECTED(workspaces.Count);
+			await SubscribeToGlazeWMEvents();
+
+			Logger.Log($"GlazeInit() => Workspaces: {workspaces.Count}");
+		};
+
 	}
 
-	public delegate void GlazeWorkspaceChangedHandler(Workspace workspace);
-	public event GlazeWorkspaceChangedHandler GLAZE_WORKSPACE_CHANGED = (workspace) => { };
+	public delegate void GlazeWorkspaceChangedHandler(int index);
+	public event GlazeWorkspaceChangedHandler GLAZE_WORKSPACE_CHANGED = (index) => { };
+
+	public delegate void GlazeConnectedEventHandler(int workspaceCount);
+	public event GlazeConnectedEventHandler GLAZE_CONNECTED = (workspaceCount) => { };
 
 	public Workspace currentWorkspace = new();
 	public List<Workspace> workspaces = new();
@@ -47,6 +59,7 @@ public partial class Api
 		if (msg.clientMessage == message)
 		{
 			int i = 0;
+			this.workspaces = new();
 			foreach (Container workspace in msg.data.workspaces)
 			{
 				Workspace wksp = new();
@@ -80,7 +93,8 @@ public partial class Api
 					focusedWorkspaceId = msg.data.focusedContainer.id;
 				}
 				currentWorkspace = workspaces.Where(wksp => wksp.id == focusedWorkspaceId).First();
-				GLAZE_WORKSPACE_CHANGED(currentWorkspace);
+				GLAZE_WORKSPACE_CHANGED(currentWorkspace.index);
+				Logger.Log($"GLAZE_WORKSPACE_CHANGED: {currentWorkspace.index}");
 				break;
 		}
 	}
@@ -110,9 +124,10 @@ public partial class Api
 		Logger.Log($"unsub reply: {reply}");
 	}
 
-	public async Task ChangeWorkspace(Workspace newWorkspace)
+	public async Task ChangeWorkspace(int index)
 	{
-		string message = $"command focus --workspace {newWorkspace.name}";
+		if (index < 0 || index > workspaces.Count - 1) return;
+		string message = $"command focus --workspace {workspaces[index].name}";
 		await client.SendCommand(message);
 	}
 
@@ -131,7 +146,7 @@ public class GlazeClient
 {
 	ClientWebSocket client = new();
 	CancellationTokenSource cts = new();
-	Uri glazeUri = new("ws://localhost:6123");
+	Uri glazeUri;
 	WebSocketReceiveResult result;
 
 	string lastReply = "";
@@ -139,31 +154,74 @@ public class GlazeClient
 	public delegate void ReplyRecievedHandler(string reply);
 	public event ReplyRecievedHandler REPLY_RECIEVED = (msg) => { };
 
-	public GlazeClient()
+	public delegate void ConnectedEventHandler();
+	public event ConnectedEventHandler CONNECTED = () => { };
+
+	public GlazeClient(string glazeUri)
 	{
-		client.ConnectAsync(glazeUri, cts.Token).Wait();
-		Task.Run(async () => { await ReadToBuffer(); });
+		this.glazeUri = new(glazeUri);
+		Task.Run(async () => { while (true) await TryConnect(); });
 	}
 
-	async Task ReadToBuffer()
+	public bool connected = false;
+	int i = 0;
+	public async Task TryConnect()
 	{
-		byte[] buffer = new byte[4096 * 4];
-		while ((result = await client.ReceiveAsync(buffer, cts.Token)).Count > 0)
+		connected = client.State == WebSocketState.Open;
+		while (!connected)
 		{
-			lastReply += Encoding.UTF8.GetString(buffer, 0, result.Count);
-			Array.Clear(buffer);
-			if (result.EndOfMessage)
+			try
 			{
-				if (commandMode)
+				Logger.Log("trying to connect to glaze...");
+				client = new();
+				cts = new();
+				await client.ConnectAsync(glazeUri, cts.Token);
+				connected = client.State == WebSocketState.Open;
+			}
+			catch (Exception ex)
+			{
+				connected = false;
+				Logger.Log(ex.Message);
+				Thread.Sleep(1000);
+			}
+		}
+		connected = true;
+		Task.Run(async () =>
+		{
+			await Task.Delay(50);
+			CONNECTED();
+		});
+		Logger.Log($"{i++}. client connected to glaze, client.state: {client.State}");
+		await Receive();
+	}
+
+	async Task Receive()
+	{
+		if (!connected) return;
+		byte[] buffer = new byte[4096 * 4];
+		try
+		{
+			while ((result = await client.ReceiveAsync(buffer, cts.Token)).Count > 0)
+			{
+				lastReply += Encoding.UTF8.GetString(buffer, 0, result.Count);
+				Array.Clear(buffer);
+				if (result.EndOfMessage)
 				{
-					commandReplyRecieved = true;
-				}
-				else
-				{
-					REPLY_RECIEVED(lastReply);
-					lastReply = "";
+					if (commandMode)
+					{
+						commandReplyRecieved = true;
+					}
+					else
+					{
+						REPLY_RECIEVED(lastReply);
+						lastReply = "";
+					}
 				}
 			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(ex.Message);
 		}
 	}
 
@@ -171,6 +229,7 @@ public class GlazeClient
 	bool commandReplyRecieved = false;
 	public async Task<string> SendCommand(string command)
 	{
+		if (!connected) return null;
 		commandMode = true;
 		commandReplyRecieved = false;
 		await client.SendAsync(Encoding.UTF8.GetBytes(command), WebSocketMessageType.Text, true, cts.Token);
