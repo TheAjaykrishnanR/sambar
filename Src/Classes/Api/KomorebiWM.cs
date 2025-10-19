@@ -33,9 +33,11 @@ class KomorebiClient
 		Task.Run(() => { while (true) TryConnect(); });
 	}
 
+	public bool connected = false;
 	public void TryConnect()
 	{
-		while (!npcs.IsConnected)
+		connected = npcs.IsConnected;
+		while (!connected)
 		{
 			try
 			{
@@ -45,20 +47,41 @@ class KomorebiClient
 				sr = new(npcs);
 				Logger.Log("komorebi closed");
 				Logger.Log("komorebi waiting for connection");
+				Task.Run(TryMakeSubscribe);
 				npcs.WaitForConnection();
+				connected = npcs.IsConnected;
 			}
 			catch (Exception ex)
 			{
+				connected = false;
 				Logger.Log(ex.Message);
 				Thread.Sleep(1000);
 			}
 		}
 		Logger.Log("komorebi connected");
+		Task.Run(async () =>
+		{
+			await Task.Delay(50);
+			CONNECTED();
+		});
 		Receive();
+	}
+
+	void TryMakeSubscribe()
+	{
+		while (!connected)
+		{
+			Logger.Log($"sending subsribe-pipe command to Komorebi");
+			Utils.ExecuteShellCommand($"komorebic subscribe-pipe {pipeName}");
+			Thread.Sleep(1000);
+		}
 	}
 
 	public delegate void MessageReceivedHandler(string message);
 	public event MessageReceivedHandler MESSAGE_RECEIVED = (message) => { };
+
+	public delegate void ConnectedEventHandler();
+	public event ConnectedEventHandler CONNECTED = () => { };
 
 	public void Receive()
 	{

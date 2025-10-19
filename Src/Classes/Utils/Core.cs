@@ -426,6 +426,27 @@ public partial class Utils
 		System.Drawing.Image img = System.Drawing.Image.FromFile(imgFile);
 		return (img.Width, img.Height);
 	}
+
+	/// <summary>
+	/// Execute a shell command string
+	/// </summary>
+	public static string? ExecuteShellCommand(string commandLine)
+	{
+		var args = commandLine.Split(" ");
+		if (args.Length < 1) return null;
+		ProcessStartInfo psi = new();
+		psi.FileName = args[0];
+		psi.Arguments = string.Join(" ", args.TakeLast(args.Length - 1));
+		psi.UseShellExecute = false;
+		psi.RedirectStandardOutput = true;
+		psi.CreateNoWindow = true;
+
+		Process p = new() { StartInfo = psi };
+		p.Start();
+		string output = p.StandardOutput.ReadToEnd();
+		p.WaitForExit();
+		return output;
+	}
 }
 
 public class _Window
