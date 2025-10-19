@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace sambar;
 public partial class Api
@@ -61,13 +62,23 @@ public partial class Api
 		List<RunningApp>? apps = new();
 		if ((apps = runningApps?.Where(app => app.hWnd == foreground_hWnd).ToList()).Count() > 0)
 		{
-			ACTIVE_WINDOW_CHANGED_EVENT(apps.First());
-			//Logger.Log($"ACTIVE WINDOW CHANGED: {apps.First().title}");
+			//ACTIVE_WINDOW_CHANGED_EVENT(apps.First());
+			RefreshRunningApps();
+			TASKBAR_APPS_EVENT(runningApps, focusedApp);
+			Logger.Log($"ACTIVE WINDOW CHANGED: {apps.First().title}");
 		}
 	}
 
-	public delegate void TaskbarAppsEventHandler(List<RunningApp> apps);
-	public event TaskbarAppsEventHandler TASKBAR_APPS_EVENT = (apps) => { };
+	public RunningApp focusedApp
+	{
+		get
+		{
+			return new RunningApp(User32.GetForegroundWindow());
+		}
+	}
+
+	public delegate void TaskbarAppsEventHandler(List<RunningApp> apps, RunningApp focusedApp);
+	public event TaskbarAppsEventHandler TASKBAR_APPS_EVENT = (apps, focusedApp) => { };
 	CancellationTokenSource _mta_cts = new();
 	/// <summary>
 	/// Live task for constantly monitoring current taskbar apps
@@ -86,7 +97,7 @@ public partial class Api
 				if (runningApps != null && runningApps.Count != _old_runningApps.Count || updateRequired)
 				{
 					//Logger.Log("MONITOR APPS TRUE", file: false);
-					TASKBAR_APPS_EVENT(runningApps);
+					TASKBAR_APPS_EVENT(runningApps, focusedApp);
 					_old_runningApps = runningApps.ToList();
 				}
 				//Logger.Log($"MONITORING TASKBAR APPS: {runningApps.Count}, {_old_runningApps.Count}", file: false);
@@ -115,6 +126,32 @@ public class RunningApp
 	public RunningApp(nint hWnd)
 	{
 		this.hWnd = hWnd;
+		InitUsingHwnd();
+	}
+
+	public RunningApp(string exePath)
+	{
+		string exeName = new FileInfo(exePath).Name;
+		int? pid = Process.GetProcessesByName(exeName).FirstOrDefault()?.Id;
+		if (pid != null)
+		{
+			this.hWnd = Utils.GetHWNDFromPID((int)pid);
+			InitUsingHwnd();
+		}
+		else
+		{
+			this.exePath = exePath;
+			Shell32.ExtractIconEx(exePath, 0, out nint largeIcon, out nint smallIcon, 1);
+			if (largeIcon != 0)
+			{
+				icon = Imaging.CreateBitmapSourceFromHIcon(largeIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+				icon.Freeze();
+			}
+		}
+	}
+
+	public void InitUsingHwnd()
+	{
 		StringBuilder str = new(256);
 		User32.GetWindowText(hWnd, str, str.Capacity);
 		title = str.ToString();
@@ -132,6 +169,7 @@ public class RunningApp
 
 	public void FocusWindow()
 	{
+		if (hWnd == 0) return;
 		Logger.Log($"App requested focus");
 		WINDOWPLACEMENT wndPlcmnt = new();
 		User32.GetWindowPlacement(hWnd, ref wndPlcmnt);
@@ -141,6 +179,7 @@ public class RunningApp
 		}
 		User32.SetForegroundWindow(hWnd);
 	}
+
 	public void Kill()
 	{
 		//Process.GetProcessById((int)processId).Kill();
