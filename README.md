@@ -22,9 +22,9 @@ positions and colors are <ins>fully customizable</ins>. [dive in?](https://githu
 
  <ins>currently available widgets</ins>:
 
- 1. [GlazeWM](https://github.com/glzr-io/glazewm) workspaces
- 2. [Komorebi](https://github.com/LGUG2Z/komorebi) workspaces
- 3. [AviyalWM](https://github.com/TheAjaykrishnanR/aviyal) workspaces
+ 1. [GlazeWM](https://github.com/glzr-io/glazewm) workspaces [?](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Widgets/Plain1-glaze.md)
+ 2. [Komorebi](https://github.com/LGUG2Z/komorebi) workspaces [?](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Widgets/Plain1-komorebi.md)
+ 3. [AviyalWM](https://github.com/TheAjaykrishnanR/aviyal) workspaces [?](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Widgets/Plain1-aviyal.md)
  4. Tray icons
  5. Live running apps (+ pin favourites)
  6. Buttons (Start, Action Center)
@@ -34,7 +34,7 @@ positions and colors are <ins>fully customizable</ins>. [dive in?](https://githu
  10. Media playback information
  11. Network Manager (open actions center)
  12. Hide the default windows taskbar
- 13. [Animated Wallpaper changer](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Widgets/Wallpapers.md)
+ 13. Animated Wallpaper changer [?](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Widgets/Wallpapers.md)
 
 ## Showcase
 
