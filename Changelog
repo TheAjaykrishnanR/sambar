@@ -1,0 +1,6 @@
+version 0.1.6
+
+- Komorebi Workspaces added
+- All window managers clients connect and try reconnecting asynchronously to
+the window manager events server
+- TaskbarApps widget supports pinning apps
