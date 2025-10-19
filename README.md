@@ -26,7 +26,7 @@ positions and colors are <ins>fully customizable</ins>. [dive in?](https://githu
  2. [Komorebi](https://github.com/LGUG2Z/komorebi) workspaces [?](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Widgets/Plain1-komorebi.md)
  3. [AviyalWM](https://github.com/TheAjaykrishnanR/aviyal) workspaces [?](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Widgets/Plain1-aviyal.md)
  4. Tray icons
- 5. Live running apps (+ pin favourites)
+ 5. Live running apps (+ pin favourites) [?](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Widgets/TaskbarApps.md)
  6. Buttons (Start, Action Center)
  7. Toggle native taskbar
  8. Performance counters (CPU, Memory, Network)
