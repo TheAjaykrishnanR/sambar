@@ -3,10 +3,13 @@ public class Wallpapers : Widget
 	public RoundedButton btn = new();
 	public string iconFile = "image.svg";
 	public Theme theme = new();
+	string wallpapersFolder;
 
 	public Wallpapers(WidgetEnv ENV) : base(ENV) { }
 	public override void Init()
 	{
+		wallpapersFolder = Path.Join(ENV.HOME, "Pictures", "Wallpapers");
+
 		if (File.Exists(Path.Join(ENV.ASSETS_FOLDER, iconFile)))
 			btn.ImageSrc = Path.Join(ENV.ASSETS_FOLDER, iconFile);
 		else
@@ -25,7 +28,6 @@ public class Wallpapers : Widget
 	{
 		sambar.Menu menu = Sambar.api.CreateMenu(0, 0, 500, 300, centerOffset: true);
 
-		string wallpapersFolder = Path.Join(ENV.HOME, "Pictures", "Wallpapers");
 		string[] walls = Directory.GetFiles(wallpapersFolder).Where(path => path.EndsWith(".jpg") || path.EndsWith(".png") || path.EndsWith(".jpeg")).ToArray();
 
 		ImageSelector imageSelector = new();

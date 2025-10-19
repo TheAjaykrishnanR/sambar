@@ -3,9 +3,14 @@ public class TaskbarApps : Widget
 	StackPanel panel = new();
 	List<RunningApp?> pinnedApps = new()
 	{
-		new(@"C:\Users\Jayakuttan\Programs\syncthing.exe"),
-		new(@"C:\Users\Jayakuttan\Programs\yt-dlp.exe"),
-		new(@"C:\Program Files\Mozilla Firefox\firefox.exe"),
+		/*
+		 *   Insert apps you want to pin to the status bar below:
+		 *
+		 *   new(@"C:\path\to\your\app1\app1Name.exe"),
+		 *   new(@"C:\path\to\your\app2\app2Name.exe"),
+		 *   new(@"C:\path\to\your\app3\app3Name.exe"),
+		 *
+		*/
 	};
 	List<RoundedButton> btns = new();
 	public Theme theme = new();
@@ -16,7 +21,6 @@ public class TaskbarApps : Widget
 		panel.VerticalAlignment = VerticalAlignment.Center;
 
 		Sambar.api.TASKBAR_APPS_EVENT += UpdateTaskbarApps;
-		//Sambar.api.ACTIVE_WINDOW_CHANGED_EVENT += UpdateFocusedApp;
 		this.Content = panel;
 	}
 
@@ -65,10 +69,6 @@ public class TaskbarApps : Widget
 							break;
 					}
 				};
-				//if (focusedApp?.hWnd == app.hWnd)
-				//{
-				//	UpdateFocusedApp(app);
-				//}
 				panel.Children.Add(btn);
 				btns.Add(btn);
 			}
