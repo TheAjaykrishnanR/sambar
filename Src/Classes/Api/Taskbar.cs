@@ -48,7 +48,7 @@ public partial class Api
 	{
 		User32.GetWindowThreadProcessId((nint)nid.hWnd, out uint processId);
 		int result = User32.AllowSetForegroundWindow(processId);
-		Logger.Log($"ImpersonateTrayEvent(): {processId}, result: {result}, win32: {Marshal.GetLastWin32Error()}");
+		//Logger.Log($"ImpersonateTrayEvent(): {processId}, result: {result}, win32: {Marshal.GetLastWin32Error()}");
 		if (nid.uTimeoutOrVersion.uVersion <= 3)
 		{
 			foreach (var winmsg in ICONACTION_MAP_V0_3[msg])
@@ -83,7 +83,7 @@ public partial class Api
 	public List<TrayIcon> GetTrayIcons()
 	{
 		var icons = interceptor.trayIconsManager.GetTrayIcons();
-		Logger.Log($"GetTrayIcons(): {icons.Count()}");
+		//Logger.Log($"GetTrayIcons(): {icons.Count()}");
 		return icons;
 	}
 
@@ -214,7 +214,7 @@ public class TaskbarInterceptor
 						}
 						// for api.TASKBAR_CHANGED event
 						// Api.TaskbarChanged();
-						Logger.Log($"ICONUPDATEACTION: {(ICONUPDATEACTION)(iconData.dwMessage)}, uid: {nid.uID}, hWnd: {nid.hWnd}, nids: {trayIconsManager.icons.Count}, class: {Utils.GetClassNameFromHWND((nint)nid.hWnd)}, version: {nid.uTimeoutOrVersion.uVersion}, callback: {nid.uCallbackMessage}, hIcon: {nid.hIcon}");
+						//Logger.Log($"ICONUPDATEACTION: {(ICONUPDATEACTION)(iconData.dwMessage)}, uid: {nid.uID}, hWnd: {nid.hWnd}, nids: {trayIconsManager.icons.Count}, class: {Utils.GetClassNameFromHWND((nint)nid.hWnd)}, version: {nid.uTimeoutOrVersion.uVersion}, callback: {nid.uCallbackMessage}, hIcon: {nid.hIcon}");
 						break;
 
 					// a tray icon's process is querying icon position using Shell_NotifyIconGetRect()
@@ -332,14 +332,14 @@ public class TrayIcon
 	{
 		NOTIFYICONDATA validatedNid = ValidateNid(nid);
 		//RightClick, class: tray_icon_app, exe: C:\Program Files\glzr.io\GlazeWM\glazewm.exe, hWnd: 3802056, uVersion: 0, callback: 6002 
-		Logger.Log($"RightClick, class: {className}, exe: {exePath}, hWnd: {validatedNid.hWnd}, uid: {validatedNid.uID}, uVersion: {validatedNid.uTimeoutOrVersion.uVersion}, callback: {validatedNid.uCallbackMessage}, callbackValid: {(validatedNid.uFlags & 0x00000001) != 0},  old_uid: {old_uVersion}");
+		//Logger.Log($"RightClick, class: {className}, exe: {exePath}, hWnd: {validatedNid.hWnd}, uid: {validatedNid.uID}, uVersion: {validatedNid.uTimeoutOrVersion.uVersion}, callback: {validatedNid.uCallbackMessage}, callbackValid: {(validatedNid.uFlags & 0x00000001) != 0},  old_uid: {old_uVersion}");
 		Sambar.api.ImpersonateTrayEvent(validatedNid, ICONACTION.RIGHT_CLICK);
 	}
 
 	public void Click()
 	{
 		NOTIFYICONDATA validatedNid = ValidateNid(nid);
-		Logger.Log($"LeftClick, class: {className}, exe: {exePath}, hWnd: {validatedNid.hWnd}, uid: {validatedNid.uID}, uVersion: {validatedNid.uTimeoutOrVersion.uVersion}, callback: {validatedNid.uCallbackMessage}, callbackValid: {(validatedNid.uFlags & 0x00000001) != 0},  old_uid: {old_uVersion}");
+		//Logger.Log($"LeftClick, class: {className}, exe: {exePath}, hWnd: {validatedNid.hWnd}, uid: {validatedNid.uID}, uVersion: {validatedNid.uTimeoutOrVersion.uVersion}, callback: {validatedNid.uCallbackMessage}, callbackValid: {(validatedNid.uFlags & 0x00000001) != 0},  old_uid: {old_uVersion}");
 		Sambar.api.ImpersonateTrayEvent(validatedNid, ICONACTION.LEFT_CLICK);
 	}
 }
@@ -369,7 +369,7 @@ public class TrayIconsManager
 			Api.TaskbarChanged();
 			return;
 		}
-		Logger.Log($"icon already exists, use Update() to modify");
+		//Logger.Log($"icon already exists, use Update() to modify");
 	}
 	public void Update(NOTIFYICONDATA nid)
 	{
@@ -392,7 +392,7 @@ public class TrayIconsManager
 			Api.TaskbarChanged();
 			return;
 		}
-		Logger.Log($"icon does not exist, use Add() instead");
+		//Logger.Log($"icon does not exist, use Add() instead");
 	}
 	public void Delete(NOTIFYICONDATA nid)
 	{

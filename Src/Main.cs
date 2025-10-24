@@ -22,13 +22,21 @@ public class _Main
 	{
 		// for logger
 		Kernel32.AttachConsole(-1);
+		Logger.Log($"Logging into {Paths.logFile}");
 
 		// check for already running instances 
-		if (Process.GetProcessesByName("sambar").Length > 1)
+		if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1)
 		{
 			Logger.Log("An instance is already running, exiting ...");
 			return;
 		}
+
+		AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+		{
+			Exception? ex = e.ExceptionObject as Exception;
+			string text = $"{ex?.Message}\n{ex?.StackTrace}";
+			Logger.Log(text);
+		};
 
 		Paths.CreateIfAbsent();
 

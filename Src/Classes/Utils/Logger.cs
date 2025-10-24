@@ -16,15 +16,16 @@ public class Logger
 	public static bool CONSOLE = true;
 	public static bool FILE = true;
 
-	public static FileStream logFile = File.Open(Paths.logFile, FileMode.OpenOrCreate);
-	public static StreamWriter logFileWriter = new(logFile);
+	//public static FileStream logFile = File.Open(Paths.logFile, FileMode.OpenOrCreate);
+	//public static StreamWriter logFileWriter = new(logFile);
 
+	private static Lock @fileLock = new();
 	public static void Log(string? text, Exception? ex = null, bool debug = true, bool console = true, bool file = true)
 	{
 		if (ex != null) text += $"\n{ex.Message}" + $"\n{ex.StackTrace}" + $"\n{ex?.InnerException?.StackTrace}";
 		if (DEBUG && debug) Debug.WriteLine(text);
 		if (CONSOLE && console) Console.WriteLine(text);
-		if (FILE && file) logFileWriter.WriteLine(text);
+		if (FILE && file) lock (@fileLock) File.AppendAllText(Paths.logFile, $"{text}\n");
 	}
 
 	public static void Log(List<string> array)
