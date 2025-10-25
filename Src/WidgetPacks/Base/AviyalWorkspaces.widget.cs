@@ -12,11 +12,11 @@ public class AviyalWorkspaces : Widget
 		Sambar.api.StartAviyalClient(aviyalPort);
 		Sambar.api.AVIYAL_MESSAGE_RECEIVED += (message) =>
 		{
-			int _workspaceCount = JsonConvert.DeserializeObject<dynamic>(message)["workspaceCount"];
-			focusedWorkspaceIndex = JsonConvert.DeserializeObject<dynamic>(message)["focusedWorkspaceIndex"];
-			if (_workspaceCount > workspaceCount)
+			AviyalMessage msg = JsonConvert.DeserializeObject<AviyalMessage>(message);
+			focusedWorkspaceIndex = msg.focusedWorkspaceIndex;
+			if (msg.workspaceCount > workspaceCount)
 			{
-				workspaceCount = _workspaceCount;
+				workspaceCount = msg.workspaceCount;
 				this.Thread.Invoke(() =>
 				{
 					this.Content = BuildUI();
@@ -92,3 +92,8 @@ public class AviyalWorkspaces : Widget
 	}
 }
 
+public class AviyalMessage
+{
+	public int workspaceCount { get; set; }
+	public int focusedWorkspaceIndex { get; set; }
+}

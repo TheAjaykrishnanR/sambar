@@ -25,6 +25,7 @@ using SkiaSharp.Views.Desktop;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Windows.Media.Animation;
 using System.ComponentModel;
+using System.Text.Json.Nodes;
 
 namespace sambar;
 
@@ -256,7 +257,8 @@ internal class WidgetLoader
 		typeof(SKPaintSurfaceEventArgs),
 		typeof(Storyboard),
 		typeof(CancelEventHandler),
-		typeof(CancelEventArgs)
+		typeof(CancelEventArgs),
+		typeof(JsonNode)
 	];
 
 	static List<string> assembliesInScript = [
@@ -283,6 +285,7 @@ using System.Windows.Media;
 using System.Net.Http;
 using System.Windows.Ink;
 using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 using ScottPlot.WPF;
 using ScottColors = ScottPlot.Colors;
 using ScottPlot.Plottables;
