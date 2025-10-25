@@ -1,9 +1,5 @@
-using System.IO;
-
 public class Tray : Widget
 {
-	sambar.Menu? menu = null;
-
 	public Theme theme = new();
 	public RoundedButton btn = new();
 	public string iconFile = "arrow_down.svg";
@@ -27,23 +23,25 @@ public class Tray : Widget
 		btn.HoverEffect = false;
 		btn.MouseDown += (s, e) =>
 		{
-			menu = Sambar.api.CreateMenu(btn, 100, 100);
-			UpdateTrayPanel();
+			sambar.Menu menu = Sambar.api.CreateMenu(btn, 100, 100);
+			UpdateMenu(menu);
+			Sambar.api.TASKBAR_CHANGED += () => UpdateMenu(menu);
+			menu.Closing += (s, e) =>
+			{
+				Sambar.api.TASKBAR_CHANGED -= () => UpdateMenu(menu);
+			};
 		};
 
 		this.Content = btn;
 		this.Background = theme.WIDGET_BACKGROUND;
 		this.CornerRadius = theme.WIDGET_CORNER_RADIUS;
-
-		Sambar.api.TASKBAR_CHANGED += () => UpdateTrayPanel();
 	}
 
-	public void UpdateTrayPanel()
+	public void UpdateMenu(sambar.Menu menu)
 	{
-		if (menu == null) return;
+		List<TrayIcon> trayIcons = Sambar.api.GetTrayIcons();
 		menu.Dispatcher.Invoke(() =>
 		{
-			List<TrayIcon> trayIcons = Sambar.api.GetTrayIcons();
 			WrapPanel panel = new();
 			Sambar.api.Print($"UpdateTrayPanel(): {trayIcons.Count()}");
 			panel.Orientation = Orientation.Horizontal;

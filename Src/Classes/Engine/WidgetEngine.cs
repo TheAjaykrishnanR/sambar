@@ -24,6 +24,7 @@ using SkiaSharp.Views.WPF;
 using SkiaSharp.Views.Desktop;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Windows.Media.Animation;
+using System.ComponentModel;
 
 namespace sambar;
 
@@ -254,6 +255,8 @@ internal class WidgetLoader
 		typeof(SKElement),
 		typeof(SKPaintSurfaceEventArgs),
 		typeof(Storyboard),
+		typeof(CancelEventHandler),
+		typeof(CancelEventArgs)
 	];
 
 	static List<string> assembliesInScript = [
