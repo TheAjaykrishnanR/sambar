@@ -1,8 +1,3 @@
-/*
-	MIT License
-    Copyright (c) 2025 Ajaykrishnan R	
-*/
-
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;

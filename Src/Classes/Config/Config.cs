@@ -1,8 +1,3 @@
-/*
-	MIT License
-    Copyright (c) 2025 Ajaykrishnan R	
-*/
-
 using Newtonsoft.Json;
 using System.Windows;
 

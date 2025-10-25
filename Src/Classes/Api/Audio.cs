@@ -1,9 +1,4 @@
-﻿/*
-	MIT License
-    Copyright (c) 2025 Ajaykrishnan R	
-*/
-
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using NAudio.CoreAudioApi;
 using NAudio.Dsp;
 using ScottPlot;

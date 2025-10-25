@@ -1,9 +1,4 @@
-﻿/*
-	MIT License
-    Copyright (c) 2025 Ajaykrishnan R	
-*/
-
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Drawing;

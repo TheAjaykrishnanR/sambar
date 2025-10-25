@@ -1,9 +1,4 @@
-﻿/*
-	MIT License
-    Copyright (c) 2025 Ajaykrishnan R	
-*/
-
-///<summary>
+﻿///<summary>
 /// Custom windows that can be used by widgets to make detached plugins
 /// such as clocks, audio visualizers or whatever one so desires. Because it
 /// doesnt fit inside Menus.cs

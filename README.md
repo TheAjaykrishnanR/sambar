@@ -91,7 +91,3 @@ Thanks to :
 
 PRs welcome !
 
-## License
-
-This project is free to use, modify and distribute according to the MIT License.
-

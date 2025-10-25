@@ -1,9 +1,4 @@
-﻿/*
-	MIT License
-    Copyright (c) 2025 Ajaykrishnan R	
-*/
-
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Windows.Devices.SmartCards;
 using Interop.UIAutomationClient;
 

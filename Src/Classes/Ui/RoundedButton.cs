@@ -1,8 +1,3 @@
-/*
-	MIT License
-    Copyright (c) 2025 Ajaykrishnan R	
-*/
-
 using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
@@ -232,8 +227,8 @@ public class RoundedButton : UserControl
 	{
 		Background = HoverColor;
 	}
-    public void RestoreColor(object sender, MouseEventArgs e)
-    {
-        Background = new SolidColorBrush(Colors.Transparent);
-    }
+	public void RestoreColor(object sender, MouseEventArgs e)
+	{
+		Background = new SolidColorBrush(Colors.Transparent);
+	}
 }

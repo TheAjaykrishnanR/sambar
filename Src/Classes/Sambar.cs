@@ -1,9 +1,4 @@
-﻿/*
-	MIT License
-    Copyright (c) 2025 Ajaykrishnan R	
-*/
-
-using System.Text;
+﻿using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
