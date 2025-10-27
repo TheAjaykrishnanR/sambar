@@ -2,7 +2,7 @@
 {
 	public AudioVisualizer(WidgetEnv ENV) : base(ENV)
 	{
-		(ThreadWindow t_wnd, WpfPlot plt, FilledSignal signal) = Sambar.api.CreateAudioVisualizer(
+		(WindowThread<WidgetWindow> t_wnd, WpfPlot plt, FilledSignal signal) = Sambar.api.CreateAudioVisualizer(
 			x: 530,
 			y: -280,
 			width: 200,

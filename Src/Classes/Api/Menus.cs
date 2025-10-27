@@ -13,8 +13,8 @@ public partial class Api
 
 	// internal menu tracker, so that only one menu is open at a time
 	// All createmenu functions must assign to this property
-	private Menu _menu;
-	public Menu activeMenu
+	private Menu? _menu;
+	public Menu? activeMenu
 	{
 		get { return _menu; }
 		set
@@ -105,7 +105,7 @@ public class Menu : Window
 
 		Task.Run(async () =>
 		{
-			Sambar.api.bar.Dispatcher.Invoke(() => this.Show());
+			Sambar.api?.bar.Dispatcher.Invoke(() => this.Show());
 			await Task.Delay(200);
 			Api.FOCUS_CHANGED_EVENT += MenuFocusChangedHandler;
 		});
@@ -160,6 +160,7 @@ public class Menu : Window
 	{
 		isClosing = true;
 		Sambar.api?.bar.Dispatcher.Invoke(() => this.Close());
+		//Sambar.api!.activeMenu = null;
 	}
 }
 

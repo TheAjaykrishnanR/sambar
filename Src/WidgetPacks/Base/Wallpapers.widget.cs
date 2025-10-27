@@ -37,9 +37,7 @@ public class Wallpapers : Widget
 			)
 		);
 		imageSelector.IMAGE_SELECTED += (imgFile) => Sambar.api.SetWallpaper(imgFile, CreateAnimation());
-		//imageSelector.IMAGE_SELECTED += (imgFile) => Sambar.api.SetWallpaper(imgFile);
 
-		menu.KeyDown += (s, e) => { if (e.Key == Key.Escape) menu.Close(); };
 		menu.Content = imageSelector;
 	}
 
@@ -137,7 +135,6 @@ public class ImageSelector : Grid
 					IMAGE_SELECTED(this.imgFiles[index]);
 					break;
 			}
-			Sambar.api.Print($"key pressed: {e.Key.ToString()}, index: {index}");
 		};
 	}
 
@@ -189,7 +186,6 @@ public class ImageSelector : Grid
 
 	public void SetImageSource(Image img, string imgFile)
 	{
-		img.Source = Sambar.api.GetImageSource(imgFile);
+		img.Source = Sambar.api?.GetImageSource(imgFile);
 	}
 }
-

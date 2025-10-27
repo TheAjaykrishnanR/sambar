@@ -24,7 +24,7 @@ public partial class Api
 	{
 	}
 
-	public (ThreadWindow, WpfPlot, FilledSignal) CreateAudioVisualizer(
+	public (WindowThread<WidgetWindow>, WpfPlot, FilledSignal) CreateAudioVisualizer(
 		int x = 100,
 		int y = 100,
 		int width = 400,
@@ -36,7 +36,7 @@ public partial class Api
 		if (centerOffset)
 			(x, y) = GetCenteredCoords(x, y, width, height);
 
-		ThreadWindow threadWnd = new(x, y, width, height, init);
+		WindowThread<WidgetWindow> threadWnd = new(x, y, width, height, init);
 		threadWnd.Run(() =>
 		{
 			audioVisPlot = new();
@@ -92,7 +92,7 @@ public partial class Api
 	{
 		activeOverlayWnd = new WidgetWindow()
 		{
-			Title = "sambarDesktopOverlaly",
+			Title = "sambarDesktopOverlay",
 			Background = new SolidColorBrush(System.Windows.Media.Colors.Black),
 			Left = 0,
 			Top = 0,
@@ -117,7 +117,7 @@ public partial class Api
 public class WidgetWindow : Window
 {
 	public nint hWnd;
-	internal WidgetWindow()
+	public WidgetWindow()
 	{
 		this.ShowActivated = false;
 		this.AllowsTransparency = true;
@@ -162,13 +162,13 @@ public class WidgetWindow : Window
 /// <summary>
 /// A wrapper for a window that runs on a separate thread.
 /// </summary>
-public class ThreadWindow
+public class WindowThread<T> where T : Window, new()
 {
-	public WidgetWindow? wnd;
+	public T? wnd;
 	public nint hWnd;
 	public FrameworkElement? content;
 	bool initialized = false;
-	internal ThreadWindow(
+	internal WindowThread(
 		int x = 100,
 		int y = 100,
 		int width = 800,
@@ -197,7 +197,7 @@ public class ThreadWindow
 		thread.Start();
 	}
 
-	public ThreadWindow EnsureInitialized()
+	public WindowThread<T> EnsureInitialized()
 	{
 		while (!initialized) Thread.Sleep(1);
 		return this;
