@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 
 namespace sambar;
 
-public class ImageSelector : Grid
+public class ImageSelector : Grid, IDisposable
 {
 	Image img1 = new();
 	Image img2 = new();
@@ -114,5 +114,23 @@ public class ImageSelector : Grid
 	public void SetImageSource(Image img, string imgFile)
 	{
 		img.Source = Sambar.api?.GetImageSource(imgFile);
+	}
+
+	public void Dispose()
+	{
+		img1.Source = null;
+		img2.Source = null;
+		img3.Source = null;
+		img1.UpdateLayout();
+		img2.UpdateLayout();
+		img3.UpdateLayout();
+		UpdateLayout();
+		Sambar.api?.imgFiles.ForEach(fs =>
+		{
+			fs.Close();
+			fs.Dispose();
+		});
+		GC.Collect();
+		GC.WaitForPendingFinalizers();
 	}
 }

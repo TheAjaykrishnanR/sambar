@@ -165,6 +165,7 @@ public class WidgetWindow : Window
 public class WindowThread<T> where T : Window, new()
 {
 	public T? wnd;
+	public Thread thread;
 	public nint hWnd;
 	public FrameworkElement? content;
 	bool initialized = false;
@@ -176,7 +177,7 @@ public class WindowThread<T> where T : Window, new()
 		Action<Window>? init = null
 	)
 	{
-		Thread thread = new(() =>
+		thread = new(() =>
 		{
 			wnd = new();
 			wnd.Title = "sambarThreadedWindow";
@@ -184,6 +185,7 @@ public class WindowThread<T> where T : Window, new()
 			wnd.Top = y;
 			wnd.Width = width;
 			wnd.Height = height;
+			wnd.Closed += (s, e) => wnd.Dispatcher.InvokeShutdown();
 			// just do this before show()
 			init?.Invoke(wnd);
 			hWnd = new WindowInteropHelper(wnd).EnsureHandle();

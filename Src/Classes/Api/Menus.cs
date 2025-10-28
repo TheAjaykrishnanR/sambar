@@ -40,7 +40,7 @@ public partial class Api
 		//x = (int)(x / Sambar.scale);
 		//y = (int)(y / Sambar.scale);
 
-		activeMenu = new Menu(x, y, width, height);
+		activeMenu = new Menu() { Left = x, Top = y, Width = width, Height = height };
 		return activeMenu;
 	}
 
@@ -51,8 +51,17 @@ public partial class Api
 	{
 		if (centerOffset)
 			(x, y) = GetCenteredCoords(x, y, width, height);
-		activeMenu = new Menu(x, y, width, height);
+		activeMenu = new Menu() { Left = x, Top = y, Width = width, Height = height };
 		return activeMenu;
+	}
+
+	public WindowThread<Menu> CreateThreadedMenu(int x, int y, int width, int height, bool centerOffset = false)
+	{
+		if (centerOffset)
+			(x, y) = GetCenteredCoords(x, y, width, height);
+
+		WindowThread<Menu> t_menu = new(x, y, width, height);
+		return t_menu;
 	}
 
 	/// <summary>
@@ -77,17 +86,13 @@ public class Menu : Window
 {
 	nint hWnd;
 	int _left, _top, _right, _bottom;
-	public Menu(int x, int y, int width, int height)
+	public Menu()
 	{
 		this.Title = "SambarContextMenu";
 		this.WindowStyle = WindowStyle.None;
 		this.Topmost = true;
 		this.AllowsTransparency = true;
 		this.ResizeMode = ResizeMode.NoResize;
-		this.Width = width;
-		this.Height = height;
-		this.Left = x;
-		this.Top = y;
 		this.ShowActivated = true;
 		this.KeyDown += (s, e) => { if (e.Key == Key.Escape) CustomClose(); };
 
@@ -105,7 +110,7 @@ public class Menu : Window
 
 		Task.Run(async () =>
 		{
-			Sambar.api?.bar.Dispatcher.Invoke(() => this.Show());
+			this.Dispatcher.Invoke(() => this.Show());
 			await Task.Delay(200);
 			Api.FOCUS_CHANGED_EVENT += MenuFocusChangedHandler;
 		});
@@ -154,20 +159,23 @@ public class Menu : Window
 
 	public void CustomShow()
 	{
-		Sambar.api?.bar.Dispatcher.Invoke(() => this.Show());
+		this.Dispatcher.Invoke(() => this.Show());
 	}
 	public void CustomClose()
 	{
 		isClosing = true;
-		Sambar.api?.bar.Dispatcher.Invoke(() => this.Close());
-		//Sambar.api!.activeMenu = null;
+		this.Dispatcher.Invoke(() => this.Close());
 	}
 }
 
 public class ContextMenu : Menu
 {
-	public ContextMenu(int x, int y, int width, int height) : base(x, y, width, height)
+	public ContextMenu(int x, int y, int width, int height)
 	{
+		this.Left = x;
+		this.Top = y;
+		this.Width = width;
+		this.Height = height;
 	}
 
 	public override async void MenuFocusChangedHandler(FocusChangedMessage msg)

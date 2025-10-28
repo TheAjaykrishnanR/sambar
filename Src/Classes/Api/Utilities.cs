@@ -8,8 +8,17 @@ namespace sambar;
 /// </summary>
 public partial class Api
 {
+	public List<FileStream> imgFiles = new();
 	public BitmapImage GetImageSource(string imageFile)
 	{
-		return new BitmapImage(new Uri(imageFile));
+		BitmapImage bi = new();
+		bi.BeginInit();
+		FileStream fs = new(imageFile, FileMode.Open);
+		imgFiles.Add(fs);
+		bi.StreamSource = fs;
+		bi.CacheOption = BitmapCacheOption.OnLoad;
+		bi.EndInit();
+		bi.Freeze();
+		return bi;
 	}
 }
