@@ -125,11 +125,6 @@ public class ImageSelector : Grid, IDisposable
 		img2.UpdateLayout();
 		img3.UpdateLayout();
 		UpdateLayout();
-		Sambar.api?.imgFiles.ForEach(fs =>
-		{
-			fs.Close();
-			fs.Dispose();
-		});
 		GC.Collect();
 		GC.WaitForPendingFinalizers();
 	}

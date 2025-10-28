@@ -9,16 +9,22 @@ namespace sambar;
 public partial class Api
 {
 	public List<FileStream> imgFiles = new();
-	public BitmapImage GetImageSource(string imageFile)
+	public BitmapImage? GetImageSource(string imageFile)
 	{
-		BitmapImage bi = new();
-		bi.BeginInit();
-		FileStream fs = new(imageFile, FileMode.Open);
-		imgFiles.Add(fs);
-		bi.StreamSource = fs;
-		bi.CacheOption = BitmapCacheOption.OnLoad;
-		bi.EndInit();
-		bi.Freeze();
-		return bi;
+		try
+		{
+			BitmapImage bi = new();
+			bi.BeginInit();
+			bi.UriSource = new(imageFile);
+			bi.CacheOption = BitmapCacheOption.OnLoad;
+			bi.EndInit();
+			bi.Freeze();
+			return bi;
+		}
+		catch (Exception ex)
+		{
+			Logger.Log(ex.Message);
+			return null;
+		}
 	}
 }
