@@ -8,7 +8,6 @@ namespace sambar;
 /// </summary>
 public partial class Api
 {
-	public List<FileStream> imgFiles = new();
 	public BitmapImage? GetImageSource(string imageFile)
 	{
 		try

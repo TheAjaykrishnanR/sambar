@@ -88,9 +88,9 @@ class Client
 		{
 			try
 			{
-				byte[] buffer = new byte[1024];
-				socket.Receive(buffer);
-				string message = Encoding.UTF8.GetString(buffer);
+				byte[] buffer = new byte[1024 * 8];
+				int received = socket.Receive(buffer);
+				string message = Encoding.UTF8.GetString(buffer.Take(received).ToArray());
 				MESSAGE_RECEIVED(message);
 			}
 			catch (Exception ex)
