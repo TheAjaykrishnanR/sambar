@@ -92,8 +92,8 @@ public partial class Api
 				if (runningApps != null && runningApps.Count != _old_runningApps.Count || updateRequired)
 				{
 					//Logger.Log("MONITOR APPS TRUE", file: false);
-					TASKBAR_APPS_EVENT(runningApps, focusedApp);
-					_old_runningApps = runningApps.ToList();
+					TASKBAR_APPS_EVENT(runningApps!, focusedApp);
+					_old_runningApps = runningApps?.ToList()!;
 				}
 				//Logger.Log($"MONITORING TASKBAR APPS: {runningApps.Count}, {_old_runningApps.Count}", file: false);
 				await Task.Delay(100);
@@ -159,9 +159,12 @@ public class RunningApp
 		{
 			try
 			{
-
 				icon = Imaging.CreateBitmapSourceFromHIcon(largeIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 				icon.Freeze();
+
+				// destroy the icons or else gdi objects go brrrr.....
+				User32.DestroyIcon(largeIcon);
+				User32.DestroyIcon(smallIcon);
 			}
 			catch (Exception ex)
 			{

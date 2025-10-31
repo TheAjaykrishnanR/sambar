@@ -174,6 +174,9 @@ public class User32
 
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern nint SetParent(nint hWndChild, nint hWndNewParent);
+
+	[DllImport("user32.dll", SetLastError = true)]
+	public static extern int DestroyIcon(nint hIcon);
 }
 
 public class Shell32
@@ -211,6 +214,12 @@ public class Kernel32
 	  StringBuilder lpTargetPath,
 	  uint ucchMax
 	);
+}
+
+public class Gdi32
+{
+	[DllImport("gdi32.dll", SetLastError = true)]
+	public static extern int DeleteObject(nint objHandle);
 }
 
 public class Dwmapi

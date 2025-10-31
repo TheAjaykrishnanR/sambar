@@ -26,8 +26,6 @@ public class TaskbarApps : Widget
 
 	public void UpdateTaskbarApps(List<RunningApp> apps, RunningApp focusedApp)
 	{
-		Sambar.api.Print($"UpdateTaskbarApps fired!");
-
 		// the final list of taskbar apps that will be displayed
 		List<RunningApp> allApps = new();
 		allApps.AddRange(pinnedApps);

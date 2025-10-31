@@ -3,6 +3,7 @@ public class Tray : Widget
 	public Theme theme = new();
 	public RoundedButton btn = new();
 	public string iconFile = "arrow_down.svg";
+	sambar.Menu? menu;
 
 	public Tray(WidgetEnv ENV) : base(ENV) { }
 	public override void Init()
@@ -21,20 +22,28 @@ public class Tray : Widget
 		btn.HoverColor = theme.BUTTON_HOVER_COLOR;
 		btn.CornerRadius = theme.BUTTON_CORNER_RADIUS;
 		btn.HoverEffect = false;
-		btn.MouseDown += (s, e) =>
-		{
-			sambar.Menu menu = Sambar.api.CreateMenu(btn, 100, 100);
-			UpdateMenu(menu);
-			Sambar.api.TASKBAR_CHANGED += () => UpdateMenu(menu);
-			menu.Closing += (s, e) =>
-			{
-				Sambar.api.TASKBAR_CHANGED -= () => UpdateMenu(menu);
-			};
-		};
+		btn.MouseDown += MouseDownEventHandler;
 
 		this.Content = btn;
 		this.Background = theme.WIDGET_BACKGROUND;
 		this.CornerRadius = theme.WIDGET_CORNER_RADIUS;
+	}
+
+	public void MouseDownEventHandler(object sender, object e)
+	{
+		menu = Sambar.api.CreateMenu(btn, 100, 100);
+		UpdateMenu(menu);
+		Sambar.api.TASKBAR_CHANGED += TaskbarChangedEventHandler;
+		menu?.Closing += (s, e) =>
+		{
+			Sambar.api.TASKBAR_CHANGED -= TaskbarChangedEventHandler;
+			menu = null;
+		};
+	}
+
+	public void TaskbarChangedEventHandler()
+	{
+		UpdateMenu(menu);
 	}
 
 	public void UpdateMenu(sambar.Menu menu)
