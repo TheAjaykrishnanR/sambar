@@ -10,26 +10,32 @@ public class AviyalWorkspaces : Widget
 	public override void Init()
 	{
 		Sambar.api.StartAviyalClient(aviyalPort);
-		Sambar.api.AVIYAL_MESSAGE_RECEIVED += (message) =>
-		{
-			//AviyalMessage msg = JsonConvert.DeserializeObject<AviyalMessage>(message);
-			Sambar.api.Print($"aviyal_message_recieved: {message}");
-			JsonNode node = JsonNode.Parse(message);
-			focusedWorkspaceIndex = Convert.ToInt32(node["focusedWorkspaceIndex"].ToString());
-			int _workspaceCount = Convert.ToInt32(node["workspaceCount"].ToString());
-			if (_workspaceCount > workspaceCount)
-			{
-				workspaceCount = _workspaceCount;
-				this.Thread.Invoke(() =>
-				{
-					this.Content = BuildUI();
-				});
-			}
-			RedrawButtons(focusedWorkspaceIndex);
-			Sambar.api.Print($"focused: {focusedWorkspaceIndex}");
-		};
-		Sambar.api.AVIYAL_CONNECTED += () => Sambar.api.AviyalSend("get state");
+		Sambar.api.AVIYAL_MESSAGE_RECEIVED += AviyalMessageReceived;
+		Sambar.api.AVIYAL_CONNECTED += AviyalConnected;
+		AviyalConnected();
+	}
+
+	void AviyalConnected()
+	{
 		Sambar.api.AviyalSend("get state");
+	}
+
+	void AviyalMessageReceived(string message)
+	{
+		Sambar.api.Print($"aviyal_message_recieved: {message}");
+		JsonNode node = JsonNode.Parse(message);
+		focusedWorkspaceIndex = Convert.ToInt32(node["focusedWorkspaceIndex"].ToString());
+		int _workspaceCount = Convert.ToInt32(node["workspaceCount"].ToString());
+		if (_workspaceCount > workspaceCount)
+		{
+			workspaceCount = _workspaceCount;
+			this.Thread.Invoke(() =>
+			{
+				this.Content = BuildUI();
+			});
+		}
+		RedrawButtons(focusedWorkspaceIndex);
+		Sambar.api.Print($"focused: {focusedWorkspaceIndex}");
 	}
 
 	Panel BuildUI()

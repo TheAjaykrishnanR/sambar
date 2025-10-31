@@ -136,12 +136,7 @@ public class RunningApp
 		else
 		{
 			this.exePath = exePath;
-			Shell32.ExtractIconEx(exePath, 0, out nint largeIcon, out nint smallIcon, 1);
-			if (largeIcon != 0)
-			{
-				icon = Imaging.CreateBitmapSourceFromHIcon(largeIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-				icon.Freeze();
-			}
+			SetIcon();
 		}
 	}
 
@@ -154,11 +149,25 @@ public class RunningApp
 		className = Utils.GetClassNameFromHWND(hWnd);
 		User32.GetWindowThreadProcessId(hWnd, out processId);
 
+		SetIcon();
+	}
+
+	void SetIcon()
+	{
 		Shell32.ExtractIconEx(exePath, 0, out nint largeIcon, out nint smallIcon, 1);
 		if (largeIcon != 0)
 		{
-			icon = Imaging.CreateBitmapSourceFromHIcon(largeIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-			icon.Freeze();
+			try
+			{
+
+				icon = Imaging.CreateBitmapSourceFromHIcon(largeIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+				icon.Freeze();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log(ex.Message);
+				Logger.Log(ex.StackTrace);
+			}
 		}
 	}
 

@@ -15,16 +15,18 @@ public class KomorebiWorkspaces : Widget
 		Sambar.api.Print($"KOMOREBI WORKSPACE COUNT: {workspaceCount}");
 		this.Content = BuildUI();
 
-		Sambar.api.KOMOREBI_MESSAGE_RECEIVED += (message) =>
+		Sambar.api.KOMOREBI_MESSAGE_RECEIVED += KomorebiMessageReceived;
+	}
+
+	void KomorebiMessageReceived(string message)
+	{
+		dynamic json = JsonConvert.DeserializeObject<dynamic>(message);
+		if (json["event"]["type"].Value == "FocusWorkspaceNumber")
 		{
-			dynamic json = JsonConvert.DeserializeObject<dynamic>(message);
-			if (json["event"]["type"].Value == "FocusWorkspaceNumber")
-			{
-				focusedWorkspaceIndex = Convert.ToInt32(json["event"]["content"].Value);
-				RedrawButtons(focusedWorkspaceIndex);
-				Sambar.api.Print($"KOMOREBI-WORKSPACE-CHANGE: {focusedWorkspaceIndex}");
-			}
-		};
+			focusedWorkspaceIndex = Convert.ToInt32(json["event"]["content"].Value);
+			RedrawButtons(focusedWorkspaceIndex);
+			Sambar.api.Print($"KOMOREBI-WORKSPACE-CHANGE: {focusedWorkspaceIndex}");
+		}
 	}
 
 	dynamic GetState()

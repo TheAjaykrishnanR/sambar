@@ -5,7 +5,6 @@
 	public Theme theme = new();
 
 	public NetworkManager(WidgetEnv ENV) : base(ENV) { }
-
 	public override void Init()
 	{
 		if (File.Exists(Path.Join(ENV.ASSETS_FOLDER, iconFile)))

@@ -37,9 +37,14 @@ public class Wallpapers : Widget
 				imageSelector.Load(walls)
 			)
 		);
-		imageSelector.IMAGE_SELECTED += (imgFile) => Sambar.api.SetWallpaper(imgFile, CreateAnimation());
+		imageSelector.IMAGE_SELECTED += ImageSelected;
 		menu.Closing += (s, e) => imageSelector.Dispose();
 		menu.Content = imageSelector;
+	}
+
+	void ImageSelected(string imgFile)
+	{
+		Sambar.api.SetWallpaper(imgFile, CreateAnimation());
 	}
 
 	public WallpaperAnimation CreateAnimation()

@@ -507,7 +507,7 @@ using System.Windows.Media.Animation;
 		+ new string(classCode.Skip(startBrace + 1).Take(endBrace - startBrace - 1).ToArray())
 		+ "}"
 		+ "catch(Exception ex) {"
-		+ """Sambar.api.Print($"[ WIDGET-EXCEPTION ]\n{ex.Message}"); Sambar.api.MessageBox(ex.Message);"""
+		+ """Sambar.api.Print($"[ WIDGET-EXCEPTION ]\n{ex.Message}\n{ex.StackTrace}"); Sambar.api.MessageBox(ex.Message);"""
 		+ (returnDefault ? "return default;" : "return;")
 		+ "}"
 		+ new string(classCode.TakeLast(classCode.Length - endBrace).ToArray());
