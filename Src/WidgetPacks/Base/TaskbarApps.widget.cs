@@ -36,6 +36,8 @@ public class TaskbarApps : Widget
 		this.Thread.Invoke(() =>
 		{
 			panel.Children.Clear();
+
+			btns.ForEach(btn => btn.Dispose());
 			btns = new();
 
 			foreach (var app in allApps)

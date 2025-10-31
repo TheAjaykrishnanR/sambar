@@ -1,6 +1,6 @@
 public class Workspaces : Widget
 {
-	public List<RoundedButton> buttons = new();
+	public List<RoundedButton> btns = new();
 	public Theme theme = new();
 	int workspaceCount = 0;
 	int focusedWorkspaceIndex = 0;
@@ -10,21 +10,27 @@ public class Workspaces : Widget
 	{
 		Sambar.api.StartGlazeClient("ws://localhost:6123");
 
-		Sambar.api.GLAZE_CONNECTED += (count) =>
+		Sambar.api.GLAZE_CONNECTED += GlazeConnected;
+		Sambar.api.GLAZE_WORKSPACE_CHANGED += GlazeWorkspaceChanged;
+	}
+
+	void GlazeConnected(int count)
+	{
+		btns?.ForEach(btn => btn.Dispose());
+		btns = new();
+
+		workspaceCount = count;
+		focusedWorkspaceIndex = Sambar.api.currentWorkspace.index;
+		this.Thread.Invoke(() =>
 		{
-			buttons = new();
-			workspaceCount = count;
-			focusedWorkspaceIndex = Sambar.api.currentWorkspace.index;
-			this.Thread.Invoke(() =>
-			{
-				this.Content = BuildUI();
-			});
-		};
-		Sambar.api.GLAZE_WORKSPACE_CHANGED += (index) =>
-		{
-			focusedWorkspaceIndex = index;
-			RedrawButtons(index);
-		};
+			this.Content = BuildUI();
+		});
+	}
+
+	void GlazeWorkspaceChanged(int index)
+	{
+		focusedWorkspaceIndex = index;
+		RedrawButtons(index);
 	}
 
 	Panel BuildUI()
@@ -50,12 +56,12 @@ public class Workspaces : Widget
 			btn.Background = theme.BUTTON_BACKGROUND;
 			btn.HoverEffect = true;
 			btn.MouseDown += WorkspaceButtonClicked;
-			buttons.Add(btn);
+			btns.Add(btn);
 			panel.Add(btn);
 		}
 
-		if (buttons.Count > 0)
-			buttons[focusedWorkspaceIndex].Background = theme.BUTTON_PRESSED_BACKGROUND;
+		if (btns.Count > 0)
+			btns[focusedWorkspaceIndex].Background = theme.BUTTON_PRESSED_BACKGROUND;
 		return panel;
 	}
 
@@ -63,12 +69,12 @@ public class Workspaces : Widget
 	{
 		this.Thread.Invoke(() =>
 		{
-			foreach (var button in buttons)
+			foreach (var btn in btns)
 			{
-				button.Background = theme.BUTTON_BACKGROUND;
+				btn.Background = theme.BUTTON_BACKGROUND;
 			}
-			buttons[index].Background = theme.BUTTON_PRESSED_BACKGROUND;
-			buttons[index].HoverEffect = false;
+			btns[index].Background = theme.BUTTON_PRESSED_BACKGROUND;
+			btns[index].HoverEffect = false;
 		});
 	}
 

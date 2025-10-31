@@ -12,7 +12,7 @@ using Image = System.Windows.Controls.Image;
 
 namespace sambar;
 
-public class RoundedButton : UserControl
+public class RoundedButton : UserControl, IDisposable
 {
 	public string Id;
 	Border RoundedButtonBorder = new();
@@ -230,5 +230,13 @@ public class RoundedButton : UserControl
 	public void RestoreColor(object sender, MouseEventArgs e)
 	{
 		Background = new SolidColorBrush(Colors.Transparent);
+	}
+
+	public void Dispose()
+	{
+		RoundedButtonImage.Source = null;
+		RoundedButtonSvgImage.Source = null;
+		bi = null;
+		UpdateLayout();
 	}
 }
