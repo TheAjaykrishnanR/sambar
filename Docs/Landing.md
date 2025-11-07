@@ -7,5 +7,5 @@ new plugins the Sambar Api is incredibly useful, see the Api reference here.
 
  1. [Basics](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Basics.md)
  2. [Configuration](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Configuration.md)
- 3. [Tutorials](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Tutorials.md)
+ 3. [Tutorials](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Tutorials/Landing.md)
  4. [Api](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Api.md)
