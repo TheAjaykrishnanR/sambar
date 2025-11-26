@@ -180,7 +180,7 @@ public partial class Api
 	private float[] GetSamples(byte[] bytes)
 	{
 		// total bytes recorded = samples * bytes per sample * channels
-		// 16 bit = 2 bytes => bytes per sample
+		// 16 bit = 2 bytes => bytes per sample (no of bytes for each amplitude i.e. precision of each amplitude)
 		int samplesCount = bytes.Length / SAMPLE_WIDTH;
 
 		// each sample has an amplitude
@@ -192,6 +192,8 @@ public partial class Api
 			// [ ..., 0x00, 0x10, ...]
 			//        ^(i)  ^(i+1) 
 			//            <-| shift to the left halfway (16/2 = 8 bits)
+			//            we need to OR two alternating bytes to build a short
+			//            alternating because channels are interweaved
 			short sample = (short)(bytes[i * SAMPLE_WIDTH] | bytes[i * SAMPLE_WIDTH + 1] << 8);
 			samples[i] = sample / 32768f;
 		}
