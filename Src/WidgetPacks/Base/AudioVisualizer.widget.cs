@@ -3,10 +3,10 @@
 	public AudioVisualizer(WidgetEnv ENV) : base(ENV)
 	{
 		(WindowThread<WidgetWindow> t_wnd, WpfPlot plt, FilledSignal signal) = Sambar.api.CreateAudioVisualizer(
-			x: 530,
-			y: -280,
-			width: 200,
-			height: 60,
+			x: 0,
+			y: 100,
+			width: 800,
+			height: 300,
 			centerOffset: true,
 			init: wnd =>
 			{
@@ -20,16 +20,16 @@
 
 			signal.LineWidth = 2;
 			signal.fillColor = System.Drawing.Color.Black;
-			plt.Width = 200;
-			plt.Height = 60;
-			plt.Plot.Layout.Frameless();
-			plt.Plot.FigureBackground = new() { Color = ScottColors.Transparent };
-			plt.Plot.Axes.Color(ScottColors.Transparent);
-			plt.Plot.Axes.FrameColor(ScottColors.Transparent);
-			plt.Plot.Grid.LineColor = ScottColors.Transparent;
+			plt.Width = 800;
+			plt.Height = 300;
+			//plt.Plot.Layout.Frameless();
+			//plt.Plot.FigureBackground = new() { Color = ScottColors.Transparent };
+			//plt.Plot.Axes.Color(ScottColors.Transparent);
+			//plt.Plot.Axes.FrameColor(ScottColors.Transparent);
+			//plt.Plot.Grid.LineColor = ScottColors.Transparent;
 
-			//pltBorder.BorderBrush = new SolidColorBrush(Colors.Red);
-			//pltBorder.BorderThickness = new(2);
+			pltBorder.BorderBrush = new SolidColorBrush(Colors.Red);
+			pltBorder.BorderThickness = new(2);
 
 			pltBorder.Child = plt;
 			panel.Children.Add(pltBorder);

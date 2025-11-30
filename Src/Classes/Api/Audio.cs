@@ -24,12 +24,13 @@ public partial class Api
 	AudioMeterInformation? audioMeterInformation = null;
 
 	const int SAMPLE_RATE = 44100;
-	const int BITS = 16;
+	const int BITS = 16; // 16 bit audio
+	const int BYTES_PER_SAMPLE = BITS / 8; // 2 bytes per sample
 	const int CHANNELS = 2;
-	const int SAMPLE_WIDTH = (BITS / sizeof(byte)) * CHANNELS;
+	const int SAMPLE_WIDTH = BYTES_PER_SAMPLE * CHANNELS; // size of one sample all channels combined
 	const int TIME_SLICE = 100;
 	const int SAMPLES_IN_TIME_SLICE = SAMPLE_RATE * TIME_SLICE / 1000;
-	const int BYTES_IN_TIME_SLICE = SAMPLES_IN_TIME_SLICE * SAMPLE_WIDTH * (BITS / sizeof(byte));
+	const int BYTES_IN_TIME_SLICE = SAMPLES_IN_TIME_SLICE * SAMPLE_WIDTH * BYTES_PER_SAMPLE;
 
 	WaveFormat waveFormat = new(SAMPLE_RATE, BITS, CHANNELS);
 	// initialized in CreateAudioVisualizer()
@@ -99,7 +100,8 @@ public partial class Api
 		// fast fourier transfor for frequencies from amplitudes
 		double[] zeroPaddedAmplitudes = Pad.ZeroPad(amplitudes);
 		System.Numerics.Complex[] complexFrequencyDistribution = FFT.Forward(zeroPaddedAmplitudes);
-		double[] frequencyWeights = FFT.Magnitude(complexFrequencyDistribution);
+		//double[] frequencyWeights = FFT.Magnitude(complexFrequencyDistribution);
+		double[] frequencyWeights = FFT.Power(complexFrequencyDistribution);
 
 		// amplitude plot
 		//plot.Plot.Axes.SetLimitsY(-1, 1);
@@ -113,26 +115,30 @@ public partial class Api
 	// Scale signal so that it looks good on ScottPlot
 	void ScaleSignal(double[] arr)
 	{
+		for (int i = 0; i < arr.Length; i++) arr[i] = -arr[i];
+		arr = arr.Reverse().ToArray();
+
 		double min = arr.Min();
 		double max = arr.Max();
 		double range = max - min;
-		double clip = 0.6; // 0 < clip < 1
-		double compressor = 0.2; // 0 < compressor < 1
-		double gain = 1.5; // 1 < gain < inf
-		double offset = 0.08;
-		if (range == 0) return;
+		//double threshold = 0.5; // 0 < clip < 1
+		//double compressor = 0.2; // 0 < compressor < 1
+		//double gain = 1; // 1 < gain < inf
+		//double offset = 0.08;
+		//if (range == 0) return;
 		for (int i = 0; i < arr.Length; i++)
 		{
-			// normalize
-			arr[i] = (arr[i] - min) / range;
-			// clip
-			if (arr[i] > clip)
-				arr[i] *= compressor;
-			// add gain
-			else
-				arr[i] *= gain;
-			// shift by offset
-			arr[i] += offset;
+			//	// normalize
+			arr[i] = (arr[i] - min) / range / 10;
+			//	// clip
+			//	if (arr[i] > threshold)
+			//		arr[i] *= compressor;
+			//	// add gain
+			//	else
+			//		arr[i] *= gain;
+
+			//	//shift by offset
+			//	arr[i] += offset;
 		}
 	}
 
@@ -159,9 +165,8 @@ public partial class Api
 				audioSignal.Data.Period = signalPeriod;
 			}
 		}
-		//audioVisPlot?.Plot.Axes.SetLimitsX(0, 20000);
-		audioVisPlot?.Plot.Axes.AutoScaleX();
-		audioVisPlot?.Plot.Axes.SetLimitsY(0, 1);
+		audioVisPlot?.Plot.Axes.SetLimitsX(0, 200);
+		audioVisPlot?.Plot.Axes.SetLimitsY(0, 100);
 
 		audioVisPlot?.Refresh();
 	}
