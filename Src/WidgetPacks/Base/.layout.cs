@@ -15,6 +15,7 @@ class BaseLayout : Layout
 	Border StartButton = new();
 	Border Counters = new();
 	Border TaskbarApps = new();
+	Border Pinger = new();
 
 	public BaseLayout()
 	{
@@ -68,6 +69,7 @@ class BaseLayout : Layout
 		col2.Children.Add(Clock);
 		// col3
 		List<Border> systemTray = new();
+		systemTray.Add(Pinger);
 		systemTray.Add(StartButton);
 		systemTray.Add(Counters);
 		systemTray.Add(NetworkManager);

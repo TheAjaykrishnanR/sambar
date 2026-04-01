@@ -17,7 +17,7 @@
 
 	void ClockTicked(Time time)
 	{
-		Thread.Invoke(() => textBlock.Text = timeString(time));
+		this.Thread.Invoke(() => textBlock.Text = timeString(time));
 	}
 
 	Func<Time, string> timeString = (time) =>

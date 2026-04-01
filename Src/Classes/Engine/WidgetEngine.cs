@@ -258,7 +258,9 @@ internal class WidgetLoader
 		typeof(Storyboard),
 		typeof(CancelEventHandler),
 		typeof(CancelEventArgs),
-		typeof(JsonNode)
+		typeof(JsonNode),
+		typeof(System.Net.IPAddress),
+		typeof(System.Net.NetworkInformation.Ping)
 	];
 
 	static List<string> assembliesInScript = [
@@ -266,6 +268,7 @@ internal class WidgetLoader
 		"System.Collections",
 		typeof(System.Runtime.CompilerServices.DynamicAttribute).Assembly.FullName,
 		typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.FullName,
+		"System.ComponentModel.Primitives"
 	];
 
 	static string scriptUsingsPrefix =
@@ -283,6 +286,7 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Windows.Ink;
 using Newtonsoft.Json;
 using System.Text.Json.Nodes;
