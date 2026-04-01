@@ -13,6 +13,7 @@
 		Sambar.api.CPU_PERFORMANCE_NOTIFIED += (_usage) => { cpuUsage = _usage[0]; };
 		Sambar.api.NETWORK_SPEED_NOTIFIED += (_speeds) => { downSpeed = _speeds[0]; upSpeed = _speeds[1]; };
 		Sambar.api.MEMORY_USAGE_NOTIFIED += (_usage) => { memUsage = _usage[1] - _usage[0]; };
+		Sambar.api.StartCounters("cpu,mem,net", 2000);
 		UpdateText();
 
 		this.Content = textBlock;

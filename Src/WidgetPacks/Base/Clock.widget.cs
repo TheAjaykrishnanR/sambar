@@ -9,7 +9,9 @@
 		textBlock.FontFamily = theme.FONT_FAMILY;
 		textBlock.VerticalAlignment = VerticalAlignment.Center;
 		textBlock.Margin = new(5);
+
 		Sambar.api.CLOCK_TICKED += ClockTicked;
+		Sambar.api.StartClock(2000);
 
 		this.Height = Sambar.api.config.height;
 		this.Content = textBlock;

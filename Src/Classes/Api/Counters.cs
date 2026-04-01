@@ -16,9 +16,32 @@ public partial class Api
 	public void CountersInit()
 	{
 		cpuCores = GetCpuCount();
-		StartCpuMonitor();
-		StartNetworkMonitor();
-		StartMemoryMonitor();
+		//StartCpuMonitor();
+		//StartNetworkMonitor();
+		//StartMemoryMonitor();
+	}
+
+	Task? cpuTask, netTask, memTask;
+	public bool StartCounters(string countersToStart, int clockTime)
+	{
+		bool success = false;
+		var counters = countersToStart.Split(",");
+		if (counters.Contains("cpu") && cpuTask == null)
+		{
+			cpuTask = StartCpuMonitor(clockTime);
+			success = cpuTask?.Status == TaskStatus.Running;
+		}
+		if (counters.Contains("net") && netTask == null)
+		{
+			netTask = StartNetworkMonitor(clockTime);
+			success = netTask?.Status == TaskStatus.Running;
+		}
+		if (counters.Contains("mem") && memTask == null)
+		{
+			memTask = StartMemoryMonitor(clockTime);
+			success = memTask?.Status == TaskStatus.Running;
+		}
+		return success;
 	}
 
 	public int GetCpuCount()
@@ -41,13 +64,13 @@ public partial class Api
 	/// Get CPU Usages
 	/// https://www.codeproject.com/Articles/9113/Get-CPU-Usage-with-GetSystemTimes
 	/// </summary>
-	public void StartCpuMonitor()
+	public Task? StartCpuMonitor(int clockTime)
 	{
-		if (cpuCores == 0) return;
+		if (cpuCores == 0) return null;
 
 		CancellationTokenSource cts = new();
 		long[] cpuStats = new long[cpuCores];
-		Task.Run(async () =>
+		return Task.Run(async () =>
 		{
 			long[] usr = new long[cpuCores];
 			long[] kernel = new long[cpuCores];
@@ -99,7 +122,7 @@ public partial class Api
 				cpuStats.ToList().ForEach(x => cpuTotalUsage += x);
 				Marshal.FreeHGlobal(bufferPtr);
 				//Logger.Log($"CPU TOTAL: {cpuTotalUsage / cpuCores}%");
-				await Task.Delay(1000);
+				await Task.Delay(clockTime);
 			}
 		}, cts.Token);
 	}
@@ -110,15 +133,15 @@ public partial class Api
 	/// <summary>
 	/// Network monitor
 	/// </summary>
-	public void StartNetworkMonitor()
+	public Task? StartNetworkMonitor(int clockTime)
 	{
 		CancellationTokenSource cts = new();
-		Task.Run(async () =>
+		return Task.Run(async () =>
 		{
 			Logger.Log($"STARTING NETWORK MONITOR");
 			var primaryInterface = Utils.GetPrimaryNetworkInterface();
 			long downBytes = 0, _downBytes = 0, upBytes = 0, _upBytes = 0, _delta_downBytes = 0, _delta_upBytes = 0;
-			int DELTA = 1000; // milliseconds
+			int DELTA = clockTime; // milliseconds
 			while (true)
 			{
 				_downBytes = downBytes;
@@ -145,10 +168,10 @@ public partial class Api
 	/// <summary>
 	/// Memory usage monirtor
 	/// </summary>
-	public void StartMemoryMonitor()
+	public Task? StartMemoryMonitor(int clockTime)
 	{
 		CancellationTokenSource cts = new();
-		Task.Run(async () =>
+		return Task.Run(async () =>
 		{
 			int infoSize = Marshal.SizeOf<_SYSTEM_MEMORY_USAGE_INFORMATION>();
 			while (true)
@@ -170,7 +193,7 @@ public partial class Api
 				//Logger.Log($"[ MEMORY ], commited: {commited} Gb, available: {available} Gb, totalPhysical: {totalPhysical} Gb ");
 				Marshal.FreeHGlobal(infoPtr);
 				MEMORY_USAGE_NOTIFIED([available, totalPhysical]);
-				await Task.Delay(1000);
+				await Task.Delay(clockTime);
 			}
 		}, cts.Token);
 	}

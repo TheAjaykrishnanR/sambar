@@ -4,15 +4,18 @@ public partial class Api
 {
 	public delegate void ClockTickedEventHandler(Time time);
 	public event ClockTickedEventHandler CLOCK_TICKED = (time) => { };
-	private void ClockInit()
+	private void ClockInit() { }
+	Task? clockTask;
+	public void StartClock(int clockTime)
 	{
+		if (clockTask?.Status == TaskStatus.Running) return;
 		Task.Run(async () =>
 		{
 			while (true)
 			{
 				Time now = new();
 				CLOCK_TICKED(now);
-				await Task.Delay(1000);
+				await Task.Delay(clockTime);
 			}
 		});
 	}
