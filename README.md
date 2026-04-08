@@ -9,6 +9,8 @@ the functions and events provided throug the API to spare yourself from reinvent
 leverage the C# standard library and build features from scratch. Everything is configurable: The layout, dimensions,
 positions and colors are <ins>fully customizable</ins>. [dive in?](https://github.com/TheAjaykrishnanR/sambar/blob/master/Docs/Landing.md)**
 
+This project was **NOT** vibecoded.
+
 <ins>Sources and inspirations</ins>:
 
  - [yasb](https://github.com/amnweb/yasb)
