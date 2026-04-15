@@ -47,12 +47,43 @@ public partial class Api
 		MMDevice? defaultSpeaker = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
 		audioMeterInformation = defaultSpeaker?.AudioMeterInformation;
 
-		System.Timers.Timer audioTimer = new(TIME_SLICE);
-		audioTimer.Elapsed += AudioTimer_Elapsed;
-		audioTimer.Start();
-
 		// Track info
 		gsmtcsm = await GlobalSystemMediaTransportControlsSessionManager.RequestAsync();
+	}
+
+	System.Timers.Timer? audioTimer;
+	public void StartAudio()
+	{
+		if (audioTimer != null)
+		{
+			audioTimer = new(TIME_SLICE);
+			audioTimer.Elapsed += AudioTimer_Elapsed;
+		}
+		audioTimer?.Start();
+	}
+
+	// Microphone
+	// COM Threading fuckery implies that you have to have the enumerator, device and all of its properties
+	// accessible only on the thread it was created. This is why we create a new enumerator and device every time.
+	public bool? IsMicMuted()
+	{
+		using MMDeviceEnumerator enumerator = new();
+		using MMDevice? defaultMic = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+		return defaultMic?.AudioEndpointVolume.Mute;
+	}
+
+	public void MuteMic()
+	{
+		using MMDeviceEnumerator enumerator = new();
+		MMDevice? defaultMic = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+		if (defaultMic != null) defaultMic.AudioEndpointVolume.Mute = true;
+	}
+
+	public void UnmuteMic()
+	{
+		using MMDeviceEnumerator enumerator = new();
+		using MMDevice? defaultMic = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+		if (defaultMic != null) defaultMic.AudioEndpointVolume.Mute = false;
 	}
 
 	public delegate void MediaInfoEventHandler(MediaInfo mediaInfo);
