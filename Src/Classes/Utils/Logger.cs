@@ -15,7 +15,8 @@ public class Logger
 	//public static StreamWriter logFileWriter = new(logFile);
 
 	private static Lock @fileLock = new();
-	public static void Log(string? text, Exception? ex = null, bool debug = true, bool console = true, bool file = true)
+	public static void Log(
+		string? text, Exception? ex = null, bool debug = true, bool console = true, bool file = true)
 	{
 		if (ex != null) text += $"\n{ex.Message}" + $"\n{ex.StackTrace}" + $"\n{ex?.InnerException?.StackTrace}";
 		if (DEBUG && debug) Debug.WriteLine(text);
